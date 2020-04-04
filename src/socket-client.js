@@ -1,5 +1,5 @@
 import SocketIOClient from 'socket.io-client';
-const socket = SocketIOClient({port: 4000});
+const socket = SocketIOClient();
 
 function helper() {
     console.log('socket-client test')
