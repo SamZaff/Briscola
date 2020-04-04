@@ -2,10 +2,11 @@
   "name": "Briscola",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:4000",
+  "proxy": "http://localhost:80",
   "dependencies": {
     "axios": "^0.19.2",
     "express": "^4.17.1",
+    "express-http-proxy": "^1.6.0",
     "http-proxy": "^1.18.0",
     "install": "^0.13.0",
     "md5": "^2.2.1",

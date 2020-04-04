@@ -52,7 +52,7 @@ export const verify = (username, password) => (dispatch, getState) => {
   console.log(password);
   console.log(username)
   console.log('USER ACTION TEST')
-  axios.get(`/check?username=${username}&password=${md5(password)}`)
+  axios.get(`db/check?username=${username}&password=${md5(password)}`)
     .then((res) => {
       console.log('VALID?: ' + res.data.valid)
       if (res.data.valid) {
@@ -70,7 +70,7 @@ export const addAccount = () => (dispatch, getState) => {
   const password = getState().userReducer.newPassword;
   console.log(password);
   console.log(username)
-  axios.get(`/insertAcc?username=${username}&password=${md5(password)}`)
+  axios.get(`db/insertAcc?username=${username}&password=${md5(password)}`)
     .then((res) => {
       if (res.data.valid) {
         dispatch(setIsLoggedIn(true))

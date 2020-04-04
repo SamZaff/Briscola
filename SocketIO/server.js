@@ -222,6 +222,7 @@ io.on('connection', (ws) => {
   ws.on('message', (messageObject) => {
     //const messageObject = JSON.parse(message);
     //console.log(messageObject.newCard)
+    console.log('1/2');
     switch (messageObject.type) {
       case 'SEND_CARD':
         setGlobalCard(messageObject.newCard);

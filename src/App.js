@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 const App = ({ activeUsers }) => {
   return (
     <div className="App">
-      <div className="active-users">active users: {activeUsers / 2}</div>
+      <div className="active-users">active users: {activeUsers}</div>
       <Switch>
         <Route path="/Briscola" component={Briscola} />
         <Route path ="/Rooms" component = {Rooms} />
