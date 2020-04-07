@@ -12,6 +12,7 @@ const dbName = 'CardGame'
 const client = new MongoClient(url);
 
 const port = 3002;
+var http = require('http').Server(app);
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
@@ -94,11 +95,11 @@ client.connect((err) => {
             .then(() => {
               valid = true
               res.send({ valid })
-              res.send('Insert Ok')
+              //res.send('Insert Ok')
             })
             .catch((e) => {
               console.log(e)
-              res.send('Error');
+              //res.send('Error');
               res.send({ valid })
             })
         }
@@ -110,5 +111,5 @@ client.connect((err) => {
 
   });
 
-  app.listen(port, () => console.log(`Listening on port ${port}!`))
+  http.listen(port, () => console.log(`Listening on port ${port}!`))
 })
