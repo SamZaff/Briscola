@@ -59,6 +59,7 @@ export const verify = (username, password) => (dispatch, getState) => {
         console.log('REALLY VALID?: ' + res.data.valid)
         dispatch(setIsLoggedIn(true))
         dispatch(setUsername(username))
+        document.cookie = "username="+username
       }
     })
     .catch(console.log);

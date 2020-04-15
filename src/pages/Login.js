@@ -9,7 +9,7 @@ import helper from '../socket-client'
 const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassword, players }) => {
     const [wrongInfo, setWrongInfo] = React.useState(false);
     const [existingAccount, setExistingAccount] = React.useState(false);
-
+    
     window.onload = function () {
         console.log('%c TEST ON LOAD', 'color: orange;')
         const data = {
@@ -54,7 +54,6 @@ const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassw
                         setWrongInfo(true);
                     }
                     // else {
-                    //dispatch(addAccount())
 
                     players.push(username)
                     console.log('PLAYERS: ' + players)
@@ -102,7 +101,7 @@ const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassw
             </div>
             <div>
                 {isLoggedIn && (
-                    <Redirect to="/Briscola" />
+                    <Redirect to="/Rooms" />
                 )}
             </div>
         </div>

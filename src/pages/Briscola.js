@@ -90,9 +90,9 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
         Score: {score}
       </div>
       <div>
-        {!isLoggedIn && (
+        {/* {!isLoggedIn && (
           <Redirect to="/" />
-        )}
+        )} */}
       </div>
       <div>
         {players && (
@@ -108,6 +108,7 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
       <h2>Briscola</h2>
       <div>
         <button onClick={() => {
+          console.log('username: ' + username)
           if ((hand.length < 3) && turn === username && cardField.length === 0) {
             handleDraw()
           }

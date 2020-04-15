@@ -4,38 +4,37 @@ const app = express()
 const http = require('http').Server(app)
 const port = 4000
 const io = require('socket.io')(http)
+const bodyParser = require('body-parser')
+app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true}))
 
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
-
-// app.set('views', './src/pages')
-// app.use(express.static('/src'))
-// app.use(express.urlencoded({extended: true}))
-
-// const rooms = {name: {}}
+//const rooms = {name : {}}
+const rooms = []
 
 
-// app.get('/', (req, res) => {
- 
-//   res.render('Rooms', { rooms: rooms})
-// })
 
-// app.get(':/room', (req, res) => {
-//   res.render('Briscola', { roomName: req.params.room })
-// })
+app.get('/getRooms', (req, res) => {
+  //console.log('THIS IS ALSO A TEST WOO')
+  res.send(rooms)
+})
 
-// app.get('/getRooms', (req, res) => {
-//   console.log('THIS IS ALSO A TEST WOO')
-//   res.send(rooms, () => {
-//     console.log("This is a test. I don't know if this will work")
-//   })
-// })
+app.post('/Rooms', (req, res) => {
+  console.log('req: ' + req.body.room)
+  // if (rooms[req.body.room] != null) {
+  //   return res.redirect('/Rooms')
+  // }
+  // if (rooms.find(req.body.room)) {
+  //   return res.redirect('/Rooms')
+  // }
+  //rooms[req.body.room] = { users: {} }
+  rooms.push({name: req.body.room,
+              users: {}
+            })
+  res.redirect('../Briscola/' + req.body.room)
+  //res.redirect('/Rooms')
+  // Send message that new room was created
+})
 
-//const wss = require('ws')
-//const wss = new WebSocket.Server({ port: 4000 });
 
 const notes = [];
 var players = [];
@@ -55,8 +54,8 @@ const broadcastMessage = (message) => {
 };
 
 const updateUserCount = (increment) => {
-  console.log('NUMBER OF CLIENTS: ' + userCount)
   userCount += increment
+  console.log('NUMBER OF CLIENTS: ' + userCount)
   broadcastMessage({
     type: 'UPDATE_USER_COUNT',
     count: userCount,
@@ -87,6 +86,8 @@ const broadcastAllMessages = (newNote) => {
     notes,
   });
 };
+
+//******GAME LOGIC******
 
 const drawCard = (drawnCard, remainingCards) => {
   //console.log(deck)
@@ -205,6 +206,8 @@ const clearField = () => {
     cardField,
   })
 }
+
+
 
 io.on('connection', (ws) => {
   console.log('Someone has connected');

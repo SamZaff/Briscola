@@ -40,11 +40,9 @@ client.connect((err) => {
   app.get('/check', (req, res) => {
     let valid = false
     let usernames = []
-    console.log('This should print')
     //console.log('count', counter);
     //console.log(req.body);
     // this should be a mongo find
-    console.log('NAME: ', req.query.username)
     db.collection('Users')
       .find({ username: req.query.username, password: req.query.password }, { $exists: true })
       .toArray()
@@ -72,7 +70,6 @@ client.connect((err) => {
   app.get('/insertAcc', (req, res) => {
     let valid = false;
     let usernames = []
-    console.log('WORKS?')
 
     db.collection('Users')
       .find({}, { projection: { _id: 0 } })
