@@ -1,7 +1,12 @@
+const md5 = require('md5')
 const express = require('express');
 const app = express();
 app.use(express.json());
+const bodyParser = require('body-parser')
+app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true}))
 const { MongoClient, ObjectID } = require('mongodb');
+
 
 //Connection URL
 const url = 'mongodb://localhost:27017';
@@ -37,14 +42,16 @@ client.connect((err) => {
   console.log("Connected successfully to server");
   const db = client.db(dbName);
 
-  app.get('/check', (req, res) => {
+  app.post('/check', (req, res) => {
+    console.log(req.body.username)
+    console.log(req.body.password)
     let valid = false
     let usernames = []
     //console.log('count', counter);
     //console.log(req.body);
     // this should be a mongo find
     db.collection('Users')
-      .find({ username: req.query.username, password: req.query.password }, { $exists: true })
+      .find({ username: req.body.username, password: md5(req.body.password) }, { $exists: true })
       .toArray()
       .then((docs) => {
         console.log(docs)
@@ -52,13 +59,11 @@ client.connect((err) => {
           usernames.push(data.username)
         })
         if (usernames.length === 0) {
-          res.send({
-            valid,
-          })
+          res.redirect('../')
         }
         else {
           valid = true
-          res.send({ valid })
+          res.redirect('../Rooms')
         }
       })
       .catch((e) => {
@@ -67,7 +72,7 @@ client.connect((err) => {
       });
   });
 
-  app.get('/insertAcc', (req, res) => {
+  app.post('/insertAcc', (req, res) => {
     let valid = false;
     let usernames = []
 
@@ -83,25 +88,25 @@ client.connect((err) => {
         console.log(usernames)
         console.log(docs)
 
-        if (!usernames.includes(req.query.username)) {
+        if (!usernames.includes(req.body.username)) {
           db.collection('Users')
             .insert({
-              username: req.query.username,
-              password: req.query.password
+              username: req.body.username,
+              password: md5(req.body.password)
             })
             .then(() => {
               valid = true
-              res.send({ valid })
+              res.redirect('../Rooms')
               //res.send('Insert Ok')
             })
             .catch((e) => {
               console.log(e)
               //res.send('Error');
-              res.send({ valid })
+              res.redirect('../')
             })
         }
         else {
-          res.send({ valid })
+          res.redirect('../')
         }
       })
 
