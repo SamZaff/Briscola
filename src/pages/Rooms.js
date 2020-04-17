@@ -1,32 +1,35 @@
 import React from 'react';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom'
 
-const Rooms = (username, password) => {
+const Rooms = (username) => {
+    window.onload = function () {
+        console.log(window.location.pathname)
+
+    }
     const [rooms, setRooms] = React.useState([]);
-    console.log('username: ' + username.username)
+    //console.log('username: ' + username.username)
     axios.get('socket/getRooms')
-    .then((res) => {
-        //console.log(res.data.name)
-        setRooms(res.data)
-        //console.log('rooms: ' + rooms.name)
-    })
-    .catch(console.log)
+        .then((res) => {
+            setRooms(res.data)
+        })
+        .catch(console.log)
     return (
         <div>
+            <div>
+                {!sessionStorage.getItem('username') && (
+                    <Redirect to="/" />
+                )}
+                <h2>Welcome, {sessionStorage.getItem('username')}</h2>
+            </div>
             <div>Rooms:</div>
             <div>
-                {/* {Object.keys(rooms).forEach(room => (
-                    <div>{room}
-                    <button>Join</button>
-                    </div>
-                    
-                ))} */}
-                {rooms.map((note, i) => (
+                {rooms.map((room, i) => (
                     <div key={i}>
-                        <div>{note.name}</div>
-                        <button onClick = {() => (<div>TEST!!</div>)}> Join</button>
+                        <div>{room.name}</div>
+                        <NavLink to={"/Briscola/" + room.name}>Join</NavLink>
                     </div>
                 ))}
             </div>

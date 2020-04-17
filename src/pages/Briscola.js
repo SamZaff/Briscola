@@ -10,6 +10,8 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
   const [text, setText] = React.useState('');
   window.onload = function () {
     console.log('%c TEST ON LOAD', 'color: green;')
+    console.log(window.location.pathname)
+    
   }
   
   window.onbeforeunload = function () {
@@ -90,9 +92,9 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
         Score: {score}
       </div>
       <div>
-        {/* {!isLoggedIn && (
+        {!sessionStorage.getItem('username') && (
           <Redirect to="/" />
-        )} */}
+        )}
       </div>
       <div>
         {players && (

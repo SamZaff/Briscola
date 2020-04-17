@@ -43,8 +43,7 @@ client.connect((err) => {
   const db = client.db(dbName);
 
   app.post('/check', (req, res) => {
-    console.log(req.body.username)
-    console.log(req.body.password)
+
     let valid = false
     let usernames = []
     //console.log('count', counter);

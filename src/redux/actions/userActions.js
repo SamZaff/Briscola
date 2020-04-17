@@ -17,26 +17,6 @@ export const setActiveUsers = activeUsers => ({
   activeUsers,
 });
 
-export const setUsername = username => ({
-  type: 'SET_USERNAME',
-  username
-});
-
-export const setPassword = password => ({
-  type: 'SET_PASSWORD',
-  password
-});
-
-export const setNewUsername = newUsername => ({
-  type: 'SET_NEW_USERNAME',
-  newUsername
-});
-
-export const setNewPassword = newPassword => ({
-  type: 'SET_NEW_PASSWORD',
-  newPassword
-});
-
 export const updatePlayerList = players => ({
   type: 'UPDATE_PLAYER_LIST',
   players

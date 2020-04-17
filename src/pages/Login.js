@@ -3,11 +3,15 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import helper from '../socket-client'
-
+import { useForm } from 'react-hook-form'
+import axios from 'axios';
 
 const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassword, players }) => {
     const [wrongInfo, setWrongInfo] = React.useState(false);
     const [existingAccount, setExistingAccount] = React.useState(false);
+    const { handleSubmit } = useForm()
+    const onSubmit = data => console.log(data)
+
 
     window.onload = function () {
         console.log('%c TEST ON LOAD', 'color: orange;')
@@ -20,6 +24,8 @@ const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassw
         //console.log(players)
         //window.ws.send(JSON.stringify(data));
     }
+
+    
 
     const updatePlayers = () => {
 
@@ -34,19 +40,32 @@ const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassw
         //window.ws.send(JSON.stringify(data));
         console.log('USERNAME!: ' + username)
         console.log(players)
+
     };
+
+    const submitLoginForm = () => {
+        sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
+        document.getElementsByTagName('form')[0].submit()
+    }
+
+    const submitSignupForm = () => {
+        sessionStorage.setItem('username', document.getElementsByName('username')[1].value)
+        document.getElementsByTagName('form')[1].submit()
+    }
+
+    
 
     return (
         <div>
             <h1>Login</h1>
-            <form action="db/check" method="POST">
+            <form action="db/check" method="POST"> {/** */}
                 <div>Username:
               <input name="username" type="text" required />
                 </div>
                 <div>Password:
               <input name="password" type='password' required />
                 </div>
-                <button type="submit">Login</button>
+                <button onClick = {submitLoginForm} >Login</button>
             </form>
             <div>
                 {wrongInfo && (
@@ -59,14 +78,14 @@ const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassw
 
                 <h2>Sign Up</h2>
                 <form action="db/insertAcc" method="POST">
-                <div>Username:
+                    <div>Username:
               <input name="username" type="text" required />
-                </div>
-                <div>Password:
+                    </div>
+                    <div>Password:
               <input name="password" type='password' required />
-                </div>
-                <button type="submit">Sign Up</button>
-            </form>
+                    </div>
+                    <button onClick = {submitSignupForm}>Sign Up</button>
+                </form>
 
             </div>
             <div>

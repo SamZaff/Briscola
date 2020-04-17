@@ -5,10 +5,6 @@ const INITIAL_STATE = {
   email: 'temp',
   isLoggedIn: false,
   activeUsers: 0,
-  username: '',
-  password: '',
-  newUsername: '',
-  newPassword: '',
   players: [],
 };
 
@@ -33,26 +29,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         activeUsers: action.activeUsers,
       };
-    case 'SET_USERNAME':
-      return {
-        ...state,
-        username: action.username
-      }
-    case 'SET_PASSWORD':
-      return {
-        ...state,
-        password: action.password
-      }
-    case 'SET_NEW_USERNAME':
-      return {
-        ...state,
-        newUsername: action.newUsername
-      }
-    case 'SET_NEW_PASSWORD':
-      return {
-        ...state,
-        newPassword: action.newPassword
-      }
+    
     case 'UPDATE_PLAYER_LIST':
       return {
         ...state,

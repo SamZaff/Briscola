@@ -14,7 +14,6 @@ import { applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'
 import socketIOClient from 'socket.io-client'
 
-//const ws = new WebSocket('ws://localhost:4000'); //THIS NEEDS TO BE CHANGED!!!
 const socket = socketIOClient('http://localhost:4000')
 //const socket = new io('https://localhost:4000');
 const store = createStore(rootReducer, applyMiddleware(thunk));

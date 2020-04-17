@@ -44,12 +44,7 @@ var trumpSuit = 'Clubs';
 userCount = 0;
 
 const broadcastMessage = (message) => {
-  //wss.clients.forEach((client) => {
-  // io.clients.forEach((client) => {
-  //   if (client.readyState === WebSocket.OPEN) {
-  //     client.send(JSON.stringify(message)); //server to client
-  //   }
-  // });
+  
   io.emit('update', message)
 };
 
@@ -209,20 +204,20 @@ const clearField = () => {
 
 
 
-io.on('connection', (ws) => {
+io.on('connection', (socket) => {
   console.log('Someone has connected');
-  
+  //console.log(socket.id)
   //broadcastMessage('someone has connected!');
   updateUserCount(1);
-  //console.log(ws)
+  //console.log(socket)
   
 
-  ws.send(JSON.stringify({
+  socket.send(JSON.stringify({
     type: 'UPDATE_MESSAGES',
     notes,
   }))
   
-  ws.on('message', (messageObject) => {
+  socket.on('message', (messageObject) => {
     //const messageObject = JSON.parse(message);
     //console.log(messageObject.newCard)
     console.log('1/2');
@@ -254,13 +249,13 @@ io.on('connection', (ws) => {
     //console.log(message);
   });
 
-  ws.on('disconnect', () => {
+  socket.on('disconnect', () => {
     //broadcastMessage('someone has disconnected!');
     updateUserCount(-1);
     console.log('someone has disconnected!');
   });
 
-  ws.on('error', (e) => {
+  socket.on('error', (e) => {
     console.log(e);
   });
 });
