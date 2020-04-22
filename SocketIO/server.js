@@ -4,48 +4,21 @@ const app = express()
 const http = require('http').Server(app)
 const port = 4000
 const io = require('socket.io')(http)
+
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
-app.use(express.urlencoded({ extended: true}))
+app.use(express.urlencoded({ extended: true }))
 
-//const rooms = {name : {}}
-const rooms = []
-
-
-
-app.get('/getRooms', (req, res) => {
-  //console.log('THIS IS ALSO A TEST WOO')
-  res.send(rooms)
-})
-
-app.post('/Rooms', (req, res) => {
-  console.log('req: ' + req.body.room)
-  // if (rooms[req.body.room] != null) {
-  //   return res.redirect('/Rooms')
-  // }
-  // if (rooms.find(req.body.room)) {
-  //   return res.redirect('/Rooms')
-  // }
-  //rooms[req.body.room] = { users: {} }
-  rooms.push({name: req.body.room,
-              users: {}
-            })
-  res.redirect('../Briscola/' + req.body.room)
-  //res.redirect('/Rooms')
-  // Send message that new room was created
-})
-
+var rooms = []
+var room = ''
 
 const notes = [];
-var players = [];
-var turn = 0;
-var cardField = [];
-var trumpSuit = 'Clubs';
+var suits = ['Clubs', 'Swords', 'Gold', 'Cups']
 userCount = 0;
 
 const broadcastMessage = (message) => {
-  
-  io.emit('update', message)
+ 
+  io.to(room.name).emit('update', message)
 };
 
 const updateUserCount = (increment) => {
@@ -58,19 +31,19 @@ const updateUserCount = (increment) => {
 };
 
 const updatePlayers = (playerList) => {
-  players = playerList;
+ // players = playerList;
   broadcastMessage({
     type: 'UPDATE_PLAYER_LIST',
-    players: playerList,
-    currentTurn: players[turn]
+    players: room.users,
+    currentTurn: room.users[room.turn]
   })
 }
 
 const sendPlayers = () => {
   broadcastMessage({
     type: 'UPDATE_PLAYER_LIST',
-    players: players,
-    currentTurn: players[turn]
+    players: room.users,
+    currentTurn: room.users[room.turn]
   })
 }
 
@@ -87,8 +60,8 @@ const broadcastAllMessages = (newNote) => {
 const drawCard = (drawnCard, remainingCards) => {
   //console.log(deck)
   //console.log('DRAWN CARD: ' + drawnCard.name)
-  turn = (turn + 1) % players.length
-  console.log('TURN: ' + turn)
+  room.turn = (room.turn + 1) % room.users.length
+  console.log('TURN: ' + room.turn)
   for (var i = 0; i < remainingCards.length; i++) {
     //console.log('TEST: ', remainingCards[i].name);
     if (remainingCards[i].name === drawnCard.name) {
@@ -101,42 +74,42 @@ const drawCard = (drawnCard, remainingCards) => {
   broadcastMessage({
     type: 'SET_REMAINING_CARDS',
     remainingCards,
-    currentTurn: players[turn]
+    currentTurn: room.users[room.turn]
   })
 
 }
 
 const determineWinner = () => {
   var points = 0
-  var leadingSuit = cardField[0].card.suit
+  var leadingSuit = room.cardField[0].card.suit
   var highest = {
     card: {
       value: 0,
       number: 0
     }
   };
-  var tempField = [...cardField]
-  
+  var tempField = [...room.cardField]
+
   //cardField.some() checks to see if any of the cards are trump cards
-  if (cardField.some(item => item.card.suit === trumpSuit)) { 
+  if (room.cardField.some(item => item.card.suit === room.trumpSuit)) {
     console.log('passed trump test')
-    for (var i = 0; i < players.length; i++) {
+    for (var i = 0; i < room.users.length; i++) {
       // console.log(cardField[i].card.value)
       // console.log(cardField[i].card.number)
-      points = points + cardField[i].card.value
-      if (cardField[i].card.suit !== trumpSuit) {
-        
-        tempField.splice(tempField.indexOf(cardField[i]), 1)
+      points = points + room.cardField[i].card.value
+      if (room.cardField[i].card.suit !== room.trumpSuit) {
+
+        tempField.splice(tempField.indexOf(room.cardField[i]), 1)
         //this has to be changed
       }
     }
   }
   else {
     console.log('passed leading test')
-    for (var i = 0; i < players.length; i++) {
-      points = points + cardField[i].card.value
-      if (cardField[i].card.suit !== leadingSuit) {
-        tempField.splice(tempField.indexOf(cardField[i]), 1)
+    for (var i = 0; i < room.users.length; i++) {
+      points = points + room.cardField[i].card.value
+      if (room.cardField[i].card.suit !== leadingSuit) {
+        tempField.splice(tempField.indexOf(room.cardField[i]), 1)
         //this has to be changed
       }
     }
@@ -153,7 +126,7 @@ const determineWinner = () => {
         console.log('BY VALUE: ' + highest.username)
       }
     }
-    turn = players.indexOf(highest.username)
+    room.turn = room.users.indexOf(highest.username)
     console.log('POINTS: ' + points)
     console.log('WINNER: ' + highest.username)
     broadcastMessage({
@@ -169,7 +142,7 @@ const determineWinner = () => {
         console.log('BY NUMBER: ' + highest.username)
       }
     }
-    turn = players.indexOf(highest.username)
+    room.turn = room.users.indexOf(highest.username)
     console.log('POINTS: ' + points)
     console.log('WINNER: ' + highest.username)
     broadcastMessage({
@@ -178,31 +151,29 @@ const determineWinner = () => {
       points: points
     })
   }
- 
+
 }
 
 const setGlobalCard = (newCard) => {
-  turn = (turn + 1) % players.length
-  cardField.push(newCard)
+  room.turn = (room.turn + 1) % room.users.length
+  room.cardField.push(newCard)
   broadcastMessage({
     type: 'SET_GLOBAL_CARD',
-    cardField,
-    currentTurn: players[turn]
+    cardField: room.cardField,
+    currentTurn: room.users[room.turn]
   })
-  if (cardField.length === players.length) {
+  if (room.cardField.length === room.users.length) {
     determineWinner()
   }
 }
 
 const clearField = () => {
-  cardField = []
+  room.cardField = []
   broadcastMessage({
     type: 'FIELD_CLEAR',
-    cardField,
+    cardField: room.cardField,
   })
 }
-
-
 
 io.on('connection', (socket) => {
   console.log('Someone has connected');
@@ -210,17 +181,60 @@ io.on('connection', (socket) => {
   //broadcastMessage('someone has connected!');
   updateUserCount(1);
   //console.log(socket)
-  
+
 
   socket.send(JSON.stringify({
     type: 'UPDATE_MESSAGES',
     notes,
   }))
-  
+
+  socket.on('submitRoom', (data) => {
+    console.log('so this works?')
+    console.log('newRoom: ' + data.roomName)
+    //rooms[req.body.room] = { users: {} }
+    rooms.push({
+      name: data.roomName,
+      users: [data.username],
+      trumpSuit: suits[Math.floor(Math.random() * suits.length)],
+      turn: 0,
+      cardField: []
+    })
+    console.log(rooms[0].name)
+    socket.join(data.roomName)
+    socket.emit('sendRooms', rooms)
+    const stuff = {
+      players: rooms[rooms.length - 1].users,
+      type: 'UPDATE_PLAYER_LIST'
+    }
+    socket.emit('update', stuff)
+  })
+
+  socket.on('joinRoom', (data) => {
+    console.log('does this work too?')
+    for (var i = 0; i < rooms.length; i++) {
+      if (rooms[i].name === data.roomName) {
+        rooms[i].users.push(data.username)
+      }
+    }
+    
+    socket.join(toString(data.roomName))
+    //console.log(rooms[0].users)
+  })
+
+  socket.on('getRooms', () => {
+    console.log('this is a test')
+    socket.emit('sendRooms', rooms)
+  })
+
   socket.on('message', (messageObject) => {
-    //const messageObject = JSON.parse(message);
-    //console.log(messageObject.newCard)
-    console.log('1/2');
+    for (var i = 0; i < rooms.length; i++) {
+      console.log(rooms[i].name)
+      console.log(messageObject.room)
+      if (rooms[i].name === messageObject.room) {
+        room = rooms[i]
+        break;
+      }
+    }
     switch (messageObject.type) {
       case 'SEND_CARD':
         setGlobalCard(messageObject.newCard);
@@ -261,5 +275,5 @@ io.on('connection', (socket) => {
 });
 
 http.listen(port, () => {
-  console.log('SHH!')
+  console.log('Listening on port: ', port)
 })

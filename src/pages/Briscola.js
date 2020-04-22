@@ -3,23 +3,26 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { updateHand, toggleCheckWinner, increaseScore } from '../redux/actions/cardsActions'
 import { Redirect} from 'react-router-dom';
-import helper from '../socket-client'
+import helper from '../index'
 
 
-const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn, username, points, checkWinner, score }) => {
+const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, checkWinner, score }) => {
   const [text, setText] = React.useState('');
+  
   window.onload = function () {
     console.log('%c TEST ON LOAD', 'color: green;')
     console.log(window.location.pathname)
+    
     
   }
   
   window.onbeforeunload = function () {
     console.log('ONBEFOREUNLOAD')
-    players.splice(players.indexOf(username), 1)
+    players.splice(players.indexOf(sessionStorage.getItem('username')), 1)
     const data = {
       type: 'UPDATE_PLAYERS',
       playerList: players,
+      room: sessionStorage.getItem('room')
 
     };
     // client to server
@@ -28,7 +31,7 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
   }
   
   if (checkWinner) {
-    if (turn === username) {
+    if (turn === sessionStorage.getItem('username')) {
       score += points
     console.log('EARNED POINTS: ' + points)
     console.log('SCORE: ' + score)
@@ -38,13 +41,15 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
   }
 
   const handleDraw = () => {
+    console.log('username: ' + sessionStorage.getItem('username'))
     hand.push(cards[Math.floor(Math.random() * cards.length)])
     dispatch(updateHand(hand))
     
     const data = {
       type: 'DRAW_CARD',
       drawn: hand[hand.length - 1],
-      remainingCards: cards
+      remainingCards: cards,
+      room: sessionStorage.getItem('room')
     };
     // client to server
     //window.ws.send(JSON.stringify(data));
@@ -56,7 +61,7 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
     const data = {
       type: 'SEND_MESSAGE',
       newNote: text,
-
+      room: sessionStorage.getItem('room')
     };
     // client to server
     //window.ws.send(JSON.stringify(data));
@@ -69,7 +74,8 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
     const data = {
       type: 'SEND_CARD',
       newCard: card,
-      remainingCards: cards
+      remainingCards: cards,
+      room: sessionStorage.getItem('room')
     };
     // client to server
     helper.helper().emit('message', data)
@@ -79,7 +85,8 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
 
   const clearField = () => {
     const data = {
-      type: 'CLEAR_FIELD'
+      type: 'CLEAR_FIELD',
+      room: sessionStorage.getItem('room')
     };
     //client to server
     helper.helper().emit('message', data)
@@ -110,10 +117,10 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
       <h2>Briscola</h2>
       <div>
         <button onClick={() => {
-          console.log('username: ' + username)
-          if ((hand.length < 3) && turn === username && cardField.length === 0) {
+          
+          //if ((hand.length < 3) && turn === sessionStorage.getItem('username') && cardField.length === 0) {
             handleDraw()
-          }
+          //}
         }}>
           Draw
         </button>
@@ -123,9 +130,9 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
 
         <div>{hand.map((card, i) =>
           <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" onClick={() => {
-            if (turn === username && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
+            if (turn === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
               handleCardField({
-                username: username,
+                username: sessionStorage.getItem('username'),
                 card: card
               })
               //NOTE TO FUTURE SELF: you may be able to change the above line to JSON data, that 
@@ -170,6 +177,10 @@ const Briscola = ({ cards, cardField, hand, isLoggedIn, players, dispatch, turn,
       </div>
       <input value={text} onChange={e => setText(e.target.value)} />
       <button onClick={handleSubmit}>Submit</button>
+
+      {!sessionStorage.getItem('username') && (
+        <Redirect to ="/"/>
+      )}
     </div>
   );
 };
@@ -179,9 +190,7 @@ const mapStateToProps = state => ({
   cards: state.cardsReducer.cards,
   cardField: state.cardsReducer.cardField,
   hand: state.cardsReducer.hand,
-  isLoggedIn: state.userReducer.isLoggedIn,
   players: state.userReducer.players,
-  username: state.userReducer.username,
   turn: state.cardsReducer.turn,
   points: state.cardsReducer.points,
   checkWinner: state.cardsReducer.checkWinner,

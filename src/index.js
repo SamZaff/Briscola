@@ -15,14 +15,15 @@ import thunk from 'redux-thunk'
 import socketIOClient from 'socket.io-client'
 
 const socket = socketIOClient('http://localhost:4000')
-//const socket = new io('https://localhost:4000');
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
+function helper() {
+  console.log('socket-client test')
+  return socket;
+}
+
 socket.on('update', messageObject => {
-  //console.log('Object: ' + messageObject)
-  //const messageObject = JSON.parse(message.data)
-  //console.log(typeof messageObject)
-  switch (messageObject.type) {
+    switch (messageObject.type) {
     case 'UPDATE_USER_COUNT':
       store.dispatch(setActiveUsers(messageObject.count));
       break;
@@ -40,7 +41,7 @@ socket.on('update', messageObject => {
       store.dispatch(updateTurn(messageObject.currentTurn))
       break;
     case 'UPDATE_PLAYER_LIST':
-      
+      console.log('welp, this better print OR ELSE')
       store.dispatch(updatePlayerList(messageObject.players))
       store.dispatch(updateTurn(messageObject.currentTurn))
       break;
@@ -56,22 +57,6 @@ socket.on('update', messageObject => {
   }
 })
 
-// ws.onclose = () => {
-//   console.log('connection has closed!');
-// };
-
-// ws.onopen = () => {
-//   //store.dispatch(setActiveUsers('test'));
-//   console.log('connection has opened!');
-// };
-
-// ws.onmessage = (message) => {
-// };
-
-// ws.onerror = (e) => {
-//   console.log(e);
-// };
-
 ReactDOM.render(
   <Provider store={store}>
     <Router>
@@ -85,3 +70,5 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+export default{helper}

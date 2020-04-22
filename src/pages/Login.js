@@ -1,48 +1,21 @@
 import React from 'react';
 //import '../App.css'
-import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import helper from '../socket-client'
-import { useForm } from 'react-hook-form'
-import axios from 'axios';
 
-const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassword, players }) => {
+const Login = ({ dispatch }) => {
     const [wrongInfo, setWrongInfo] = React.useState(false);
-    const [existingAccount, setExistingAccount] = React.useState(false);
-    const { handleSubmit } = useForm()
-    const onSubmit = data => console.log(data)
+    const [existingAccount, setExistingAccount] = React.useState(false)
 
 
     window.onload = function () {
         console.log('%c TEST ON LOAD', 'color: orange;')
-        const data = {
-            type: 'GET_PLAYERS',
-        };
-        // client to server
+        // const data = {
+        //     type: 'GET_PLAYERS',
+        // };
+        // // client to server
 
-        helper.helper().emit('message', data)
-        //console.log(players)
-        //window.ws.send(JSON.stringify(data));
     }
-
     
-
-    const updatePlayers = () => {
-
-        const data = {
-            type: 'UPDATE_PLAYERS',
-            playerList: players,
-
-        };
-        // client to server
-        console.log('UPDATE PLAYERS')
-        helper.helper().emit('message', data)
-        //window.ws.send(JSON.stringify(data));
-        console.log('USERNAME!: ' + username)
-        console.log(players)
-
-    };
-
     const submitLoginForm = () => {
         sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
         document.getElementsByTagName('form')[0].submit()
@@ -53,12 +26,11 @@ const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassw
         document.getElementsByTagName('form')[1].submit()
     }
 
-    
 
     return (
         <div>
             <h1>Login</h1>
-            <form action="db/check" method="POST"> {/** */}
+            <form action="db/check" method="POST">
                 <div>Username:
               <input name="username" type="text" required />
                 </div>
@@ -95,11 +67,6 @@ const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassw
                     </div>
                 )}
             </div>
-            <div>
-                {isLoggedIn && (
-                    <Redirect to="/Rooms" />
-                )}
-            </div>
         </div>
     );
 
@@ -108,7 +75,6 @@ const Login = ({ username, password, isLoggedIn, dispatch, newUsername, newPassw
 const mapStateToProps = state => ({
     username: state.userReducer.username,
     password: state.userReducer.password,
-    isLoggedIn: state.userReducer.isLoggedIn,
     players: state.userReducer.players,
 });
 
