@@ -1,14 +1,14 @@
 import React from 'react';
-import axios from 'axios';
 import { connect } from 'react-redux';
-import { Redirect, Link, NavLink } from 'react-router-dom'
+import { Redirect} from 'react-router-dom'
 import helper from '../index'
 
-const Rooms = () => {
+const Rooms = (players) => {
 
     const [rooms, setRooms] = React.useState([]);
     const [newRoom, setNewRoom] = React.useState('');
     const [isRedirect, setIsRedirect] = React.useState(false);
+    const [isTaken, setIsTaken] = React.useState(false);
     
     window.onload = function() {
         console.log('onload test')
@@ -16,22 +16,31 @@ const Rooms = () => {
         
     }
     
-    // helper.helper().on('sendRooms', rooms => {
-    //     setRooms(rooms)
-    // })
+    
 
-    const submitRoom = () => {
+    React.useEffect(() => {
+        helper.helper().on('sendRooms', rooms => {
+            setRooms(rooms)
+        })
+      }, []);
+
+    const submitRoom = (players) => {
         var data = {
             username: sessionStorage.getItem('username'),
             roomName: newRoom
         }
-        if (newRoom !== null) {
+        console.log(rooms.includes(newRoom))
+        if (newRoom !== null && !rooms.includes(newRoom)) {
             helper.helper().emit('submitRoom', data)
             sessionStorage.setItem('room', newRoom)
             setIsRedirect(true)
             
         }
-        console.log('this is a test')
+        else if (rooms.includes(newRoom)) {
+            console.log('NAME TAKEN')
+            setIsTaken(true)
+        }
+        console.log('this is a test1')
         
     }
 
@@ -40,17 +49,14 @@ const Rooms = () => {
             username: sessionStorage.getItem('username'),
             roomName: room
         }
+        sessionStorage.setItem('room', room)
         helper.helper().emit('joinRoom', data)
-        console.log('this is a test')
+        console.log('PLAYERS: ', players)
         setIsRedirect(true)
+        //console.log(players)
     }
 
     
-    // axios.get('socket/getRooms')
-    //     .then((res) => {
-    //         setRooms(res.data)
-    //     })
-    //     .catch(console.log)
     return (
         <div>
             <div>
@@ -64,17 +70,25 @@ const Rooms = () => {
                 {rooms.map((room, i) => (
                     <div key={i}>
                         <div>{room.name}</div>
-                        <button onClick = {joinRoom(room.name)}>Join</button>
+                        <div>{room.users.length}/4</div>
+                        {room.users.length < 4 && (
+                        <button onClick = {() => joinRoom(room.name)}>Join</button>
+                        )}
+                        {room.users.length >= 4 && (
+                        <div> <b>FULL</b> </div>
+                        )}
                     </div>
                 ))}
             </div>
             <form>
                 <input type="text" value = {newRoom} onChange = {e => setNewRoom(e.target.value)}  required />
-                {/* <button >New Room</button> */}
                 <button onClick={submitRoom}>New Room</button>
             </form>
             {isRedirect && (
                 <Redirect to = "/Briscola"/>
+            )}
+            {isTaken && (
+                <p color = "red">Room name has already been taken</p>
             )}
         </div>
     )
@@ -83,6 +97,7 @@ const Rooms = () => {
 const mapStateToProps = state => ({
     username: state.userReducer.username,
     password: state.userReducer.password,
+    players: state.userReducer.players
 });
 
 export default connect(mapStateToProps)(Rooms)

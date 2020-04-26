@@ -10,15 +10,26 @@ app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }))
 
 var rooms = []
-var room = ''
+var room = {
+  name: '',
+  users: [],
+  trumpSuit: '',
+  turn: 0,
+  cardField: []
+}
 
 const notes = [];
 var suits = ['Clubs', 'Swords', 'Gold', 'Cups']
 userCount = 0;
 
 const broadcastMessage = (message) => {
- 
-  io.to(room.name).emit('update', message)
+
+  io.in(room.name).emit('update', message)
+};
+
+const broadcastMessageTEMP = (message) => {
+
+  io.in(message.roomName).emit('update', message)
 };
 
 const updateUserCount = (increment) => {
@@ -31,7 +42,8 @@ const updateUserCount = (increment) => {
 };
 
 const updatePlayers = (playerList) => {
- // players = playerList;
+  // players = playerList;
+  console.log('turn: ', room.users[room.turn])
   broadcastMessage({
     type: 'UPDATE_PLAYER_LIST',
     players: room.users,
@@ -92,7 +104,7 @@ const determineWinner = () => {
 
   //cardField.some() checks to see if any of the cards are trump cards
   if (room.cardField.some(item => item.card.suit === room.trumpSuit)) {
-    console.log('passed trump test')
+
     for (var i = 0; i < room.users.length; i++) {
       // console.log(cardField[i].card.value)
       // console.log(cardField[i].card.number)
@@ -105,7 +117,7 @@ const determineWinner = () => {
     }
   }
   else {
-    console.log('passed leading test')
+
     for (var i = 0; i < room.users.length; i++) {
       points = points + room.cardField[i].card.value
       if (room.cardField[i].card.suit !== leadingSuit) {
@@ -189,7 +201,6 @@ io.on('connection', (socket) => {
   }))
 
   socket.on('submitRoom', (data) => {
-    console.log('so this works?')
     console.log('newRoom: ' + data.roomName)
     //rooms[req.body.room] = { users: {} }
     rooms.push({
@@ -204,26 +215,72 @@ io.on('connection', (socket) => {
     socket.emit('sendRooms', rooms)
     const stuff = {
       players: rooms[rooms.length - 1].users,
-      type: 'UPDATE_PLAYER_LIST'
+      turn: rooms[rooms.length - 1].users[rooms[rooms.length - 1].turn],
+      type: 'UPDATE_PLAYER_LIST',
+      roomName: data.roomName
     }
-    socket.emit('update', stuff)
+    //socket.in(data.roomName).emit('update', stuff)
+    broadcastMessageTEMP(stuff)
   })
 
+
+
   socket.on('joinRoom', (data) => {
-    console.log('does this work too?')
+
+    var stuff;
     for (var i = 0; i < rooms.length; i++) {
       if (rooms[i].name === data.roomName) {
+        console.log('if statement test')
         rooms[i].users.push(data.username)
+        stuff = {
+          players: rooms[i].users,
+          turn: rooms[i].users[rooms[i].turn],
+          type: 'UPDATE_PLAYER_LIST',
+          roomName: data.roomName
+
+        }
+        console.log('CURRENT PLAYERS: ' + rooms[i].users)
+        socket.join(data.roomName)
+
       }
     }
-    
-    socket.join(toString(data.roomName))
+    //console.log('TYPE: ', stuff.type)
+    //socket.in(data.roomName).emit('update', stuff)
+    broadcastMessageTEMP(stuff)
+
     //console.log(rooms[0].users)
   })
 
   socket.on('getRooms', () => {
-    console.log('this is a test')
+    for (var i = 0; i < rooms.length; i) {
+      if (!io.sockets.adapter.rooms[rooms[i].name]) {
+        console.log('room successfully removed')
+        rooms.splice(i, 1)
+      }
+      else {
+        i++
+      }
+    }
     socket.emit('sendRooms', rooms)
+  })
+
+  socket.on('remove', (data) => {
+
+    var temp = []
+    var stuff;
+    for (var i = 0; i < rooms.length; i++) {
+      if (rooms[i].name === data.room) {
+        rooms[i].users.splice(rooms.indexOf(data.username), 1)
+        stuff = {
+          type: 'UPDATE_PLAYER_LIST',
+          players: rooms[i].users,
+          turn: data.turn
+        }
+      }
+      break;
+    }
+
+    socket.in(data.room).emit('update', stuff)
   })
 
   socket.on('message', (messageObject) => {

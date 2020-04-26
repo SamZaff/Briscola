@@ -12,22 +12,31 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
   window.onload = function () {
     console.log('%c TEST ON LOAD', 'color: green;')
     console.log(window.location.pathname)
-    
-    
-  }
-  
-  window.onbeforeunload = function () {
-    console.log('ONBEFOREUNLOAD')
-    players.splice(players.indexOf(sessionStorage.getItem('username')), 1)
     const data = {
       type: 'UPDATE_PLAYERS',
       playerList: players,
       room: sessionStorage.getItem('room')
 
     };
+    helper.helper().emit('message', data)
+    
+  }
+  
+  window.onbeforeunload = function () {
+    console.log('ONBEFOREUNLOAD')
+    if (turn === this.sessionStorage.getItem('username')){
+      turn = players[(players.indexOf(turn) + 1)%players.length]
+    }
+    const data = {
+      room: sessionStorage.getItem('room'),
+      username: sessionStorage.getItem('username'),
+      turn
+    };
     // client to server
     //window.ws.send(JSON.stringify(data));
-    helper.helper().emit('message', data)
+    // helper.helper().emit('message', data)
+    helper.helper().emit('remove', data)
+    
   }
   
   if (checkWinner) {
@@ -41,7 +50,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
   }
 
   const handleDraw = () => {
-    console.log('username: ' + sessionStorage.getItem('username'))
+    console.log(players)
     hand.push(cards[Math.floor(Math.random() * cards.length)])
     dispatch(updateHand(hand))
     
@@ -117,10 +126,10 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
       <h2>Briscola</h2>
       <div>
         <button onClick={() => {
-          
-          //if ((hand.length < 3) && turn === sessionStorage.getItem('username') && cardField.length === 0) {
+          console.log(turn)
+          if ((hand.length < 3) && turn === sessionStorage.getItem('username') && cardField.length === 0) {
             handleDraw()
-          //}
+          }
         }}>
           Draw
         </button>
@@ -129,7 +138,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
 
 
         <div>{hand.map((card, i) =>
-          <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" onClick={() => {
+          <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" alt={card.name} onClick={() => {
             if (turn === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
               handleCardField({
                 username: sessionStorage.getItem('username'),
@@ -154,7 +163,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
       <div>
         {cardField && (
           <div>
-            {cardField.map((card, i) => <img src={require('../ItalianCards/' + card.card.name + '.jpg')} width="200" height="414" />)}
+            {cardField.map((card, i) => <img src={require('../ItalianCards/' + card.card.name + '.jpg')} width="200" height="414" alt={card.name} />)}
           </div>
         )}
 

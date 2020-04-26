@@ -17,12 +17,8 @@ import socketIOClient from 'socket.io-client'
 const socket = socketIOClient('http://localhost:4000')
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
-function helper() {
-  console.log('socket-client test')
-  return socket;
-}
-
 socket.on('update', messageObject => {
+    console.log('this should print')
     switch (messageObject.type) {
     case 'UPDATE_USER_COUNT':
       store.dispatch(setActiveUsers(messageObject.count));
@@ -43,7 +39,7 @@ socket.on('update', messageObject => {
     case 'UPDATE_PLAYER_LIST':
       console.log('welp, this better print OR ELSE')
       store.dispatch(updatePlayerList(messageObject.players))
-      store.dispatch(updateTurn(messageObject.currentTurn))
+      store.dispatch(updateTurn(messageObject.turn))
       break;
     case 'FIELD_CLEAR':
       store.dispatch(updateCardField(messageObject.cardField))
@@ -70,5 +66,11 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+
+function helper() {
+  console.log('socket-client test')
+  return socket;
+}
 
 export default{helper}

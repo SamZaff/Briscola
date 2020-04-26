@@ -1,5 +1,3 @@
-import axios from 'axios'
-import md5 from 'md5'
 
 export const setEmail = email => ({ // 1 param = no parentheses
   type: 'SET_EMAIL',
