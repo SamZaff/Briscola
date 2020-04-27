@@ -124,6 +124,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
 
       </div>
       <h2>Briscola</h2>
+      {/* {(cards === 0 && hand === 0 &&)} */}
       <div>
         <button onClick={() => {
           console.log(turn)

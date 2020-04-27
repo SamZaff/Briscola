@@ -1,3 +1,4 @@
+
 function getDeck(){
 
  deck = [{
@@ -242,6 +243,7 @@ function getDeck(){
 
   return deck;
 }
-  
 
-export default getDeck
+deck = getDeck()
+
+exports.data = deck

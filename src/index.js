@@ -18,7 +18,7 @@ const socket = socketIOClient('http://localhost:4000')
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 socket.on('update', messageObject => {
-    console.log('this should print')
+    console.log(messageObject.type)
     switch (messageObject.type) {
     case 'UPDATE_USER_COUNT':
       store.dispatch(setActiveUsers(messageObject.count));
@@ -40,6 +40,7 @@ socket.on('update', messageObject => {
       console.log('welp, this better print OR ELSE')
       store.dispatch(updatePlayerList(messageObject.players))
       store.dispatch(updateTurn(messageObject.turn))
+      //store.dispatch(updateCards(messageObject.cards))
       break;
     case 'FIELD_CLEAR':
       store.dispatch(updateCardField(messageObject.cardField))

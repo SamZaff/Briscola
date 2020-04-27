@@ -1,10 +1,10 @@
-//import deck from './deck';
+
 const express = require('express')
 const app = express()
 const http = require('http').Server(app)
 const port = 4000
 const io = require('socket.io')(http)
-
+const deck = require('../deck')
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }))
@@ -23,14 +23,11 @@ var suits = ['Clubs', 'Swords', 'Gold', 'Cups']
 userCount = 0;
 
 const broadcastMessage = (message) => {
-
-  io.in(room.name).emit('update', message)
-};
-
-const broadcastMessageTEMP = (message) => {
-
+  
   io.in(message.roomName).emit('update', message)
 };
+
+//DELETE UPDATE USER COUNT
 
 const updateUserCount = (increment) => {
   userCount += increment
@@ -41,21 +38,16 @@ const updateUserCount = (increment) => {
   });
 };
 
-const updatePlayers = (playerList) => {
+//DELETE UPDATE USER COUNT
+
+const updatePlayers = () => {
   // players = playerList;
   console.log('turn: ', room.users[room.turn])
   broadcastMessage({
     type: 'UPDATE_PLAYER_LIST',
     players: room.users,
-    currentTurn: room.users[room.turn]
-  })
-}
-
-const sendPlayers = () => {
-  broadcastMessage({
-    type: 'UPDATE_PLAYER_LIST',
-    players: room.users,
-    currentTurn: room.users[room.turn]
+    currentTurn: room.users[room.turn],
+    roomName: room.name
   })
 }
 
@@ -70,8 +62,7 @@ const broadcastAllMessages = (newNote) => {
 //******GAME LOGIC******
 
 const drawCard = (drawnCard, remainingCards) => {
-  //console.log(deck)
-  //console.log('DRAWN CARD: ' + drawnCard.name)
+
   room.turn = (room.turn + 1) % room.users.length
   console.log('TURN: ' + room.turn)
   for (var i = 0; i < remainingCards.length; i++) {
@@ -81,12 +72,11 @@ const drawCard = (drawnCard, remainingCards) => {
       break;
     }
   }
-  //remainingCards.splice(remainingCards.indexOf(drawnCard), 1 )
-  //console.log(remainingCards)
   broadcastMessage({
     type: 'SET_REMAINING_CARDS',
     remainingCards,
-    currentTurn: room.users[room.turn]
+    currentTurn: room.users[room.turn],
+    roomName: room.name
   })
 
 }
@@ -106,11 +96,8 @@ const determineWinner = () => {
   if (room.cardField.some(item => item.card.suit === room.trumpSuit)) {
 
     for (var i = 0; i < room.users.length; i++) {
-      // console.log(cardField[i].card.value)
-      // console.log(cardField[i].card.number)
       points = points + room.cardField[i].card.value
       if (room.cardField[i].card.suit !== room.trumpSuit) {
-
         tempField.splice(tempField.indexOf(room.cardField[i]), 1)
         //this has to be changed
       }
@@ -141,11 +128,7 @@ const determineWinner = () => {
     room.turn = room.users.indexOf(highest.username)
     console.log('POINTS: ' + points)
     console.log('WINNER: ' + highest.username)
-    broadcastMessage({
-      type: 'GIVE_POINTS_AND_TURN',
-      currentTurn: highest.username,
-      points: points
-    })
+    
   }
   else {
     for (var i = 0; i < tempField.length; i++) {
@@ -157,13 +140,15 @@ const determineWinner = () => {
     room.turn = room.users.indexOf(highest.username)
     console.log('POINTS: ' + points)
     console.log('WINNER: ' + highest.username)
-    broadcastMessage({
-      type: 'GIVE_POINTS_AND_TURN',
-      currentTurn: highest.username,
-      points: points
-    })
+    
   }
 
+  broadcastMessage({
+    type: 'GIVE_POINTS_AND_TURN',
+    currentTurn: highest.username,
+    points: points,
+    roomName: room.name
+  })
 }
 
 const setGlobalCard = (newCard) => {
@@ -172,7 +157,8 @@ const setGlobalCard = (newCard) => {
   broadcastMessage({
     type: 'SET_GLOBAL_CARD',
     cardField: room.cardField,
-    currentTurn: room.users[room.turn]
+    currentTurn: room.users[room.turn],
+    roomName: room.name
   })
   if (room.cardField.length === room.users.length) {
     determineWinner()
@@ -184,6 +170,7 @@ const clearField = () => {
   broadcastMessage({
     type: 'FIELD_CLEAR',
     cardField: room.cardField,
+    roomName: room.name
   })
 }
 
@@ -220,7 +207,7 @@ io.on('connection', (socket) => {
       roomName: data.roomName
     }
     //socket.in(data.roomName).emit('update', stuff)
-    broadcastMessageTEMP(stuff)
+    broadcastMessage(stuff)
   })
 
 
@@ -246,7 +233,7 @@ io.on('connection', (socket) => {
     }
     //console.log('TYPE: ', stuff.type)
     //socket.in(data.roomName).emit('update', stuff)
-    broadcastMessageTEMP(stuff)
+    broadcastMessage(stuff)
 
     //console.log(rooms[0].users)
   })
@@ -306,9 +293,6 @@ io.on('connection', (socket) => {
         break;
       case 'UPDATE_PLAYERS':
         updatePlayers(messageObject.playerList);
-        break;
-      case 'GET_PLAYERS':
-        sendPlayers();
         break;
       case 'CLEAR_FIELD':
         clearField();
