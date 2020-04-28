@@ -4,26 +4,22 @@ const app = express()
 const http = require('http').Server(app)
 const port = 4000
 const io = require('socket.io')(http)
-const deck = require('../deck')
+var deckLogic = require('../deck').data
+var defaultDeck = deckLogic.getDeck()
+// deck = require('../deck').data.shuffle(deck)
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }))
 
 var rooms = []
-var room = {
-  name: '',
-  users: [],
-  trumpSuit: '',
-  turn: 0,
-  cardField: []
-}
+var num; //this variable correlates to room# or which room in the array is being used (EX. "rooms[num]")
+
 
 const notes = [];
 var suits = ['Clubs', 'Swords', 'Gold', 'Cups']
 userCount = 0;
 
 const broadcastMessage = (message) => {
-  
   io.in(message.roomName).emit('update', message)
 };
 
@@ -41,13 +37,12 @@ const updateUserCount = (increment) => {
 //DELETE UPDATE USER COUNT
 
 const updatePlayers = () => {
-  // players = playerList;
-  console.log('turn: ', room.users[room.turn])
+  console.log('turn: ', rooms[num].users[rooms[num].turn])
   broadcastMessage({
     type: 'UPDATE_PLAYER_LIST',
-    players: room.users,
-    currentTurn: room.users[room.turn],
-    roomName: room.name
+    players: rooms[num].users,
+    currentTurn: rooms[num].users[rooms[num].turn],
+    roomName: rooms[num].name
   })
 }
 
@@ -61,54 +56,48 @@ const broadcastAllMessages = (newNote) => {
 
 //******GAME LOGIC******
 
-const drawCard = (drawnCard, remainingCards) => {
+const drawCard = (/*drawnCard, remainingCards*/) => {
 
-  room.turn = (room.turn + 1) % room.users.length
-  console.log('TURN: ' + room.turn)
-  for (var i = 0; i < remainingCards.length; i++) {
-    //console.log('TEST: ', remainingCards[i].name);
-    if (remainingCards[i].name === drawnCard.name) {
-      remainingCards.splice(i, 1)
-      break;
-    }
-  }
+  rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
+  rooms[num].deck.pop()
   broadcastMessage({
     type: 'SET_REMAINING_CARDS',
-    remainingCards,
-    currentTurn: room.users[room.turn],
-    roomName: room.name
+    remainingCards: rooms[num].deck,
+    currentTurn: rooms[num].users[rooms[num].turn],
+    roomName: rooms[num].name
   })
+  
 
 }
 
 const determineWinner = () => {
   var points = 0
-  var leadingSuit = room.cardField[0].card.suit
+  var leadingSuit = rooms[num].cardField[0].card.suit
   var highest = {
     card: {
       value: 0,
       number: 0
     }
   };
-  var tempField = [...room.cardField]
+  var tempField = [...rooms[num].cardField]
 
   //cardField.some() checks to see if any of the cards are trump cards
-  if (room.cardField.some(item => item.card.suit === room.trumpSuit)) {
+  if (rooms[num].cardField.some(item => item.card.suit === rooms[num].trumpSuit)) {
 
-    for (var i = 0; i < room.users.length; i++) {
-      points = points + room.cardField[i].card.value
-      if (room.cardField[i].card.suit !== room.trumpSuit) {
-        tempField.splice(tempField.indexOf(room.cardField[i]), 1)
+    for (var i = 0; i < rooms[num].users.length; i++) {
+      points = points + rooms[num].cardField[i].card.value
+      if (rooms[num].cardField[i].card.suit !== rooms[num].trumpSuit) {
+        tempField.splice(tempField.indexOf(rooms[num].cardField[i]), 1)
         //this has to be changed
       }
     }
   }
   else {
 
-    for (var i = 0; i < room.users.length; i++) {
-      points = points + room.cardField[i].card.value
-      if (room.cardField[i].card.suit !== leadingSuit) {
-        tempField.splice(tempField.indexOf(room.cardField[i]), 1)
+    for (var i = 0; i < rooms[num].users.length; i++) {
+      points = points + rooms[num].cardField[i].card.value
+      if (rooms[num].cardField[i].card.suit !== leadingSuit) {
+        tempField.splice(tempField.indexOf(rooms[num].cardField[i]), 1)
         //this has to be changed
       }
     }
@@ -125,7 +114,7 @@ const determineWinner = () => {
         console.log('BY VALUE: ' + highest.username)
       }
     }
-    room.turn = room.users.indexOf(highest.username)
+    rooms[num].turn = rooms[num].users.indexOf(highest.username)
     console.log('POINTS: ' + points)
     console.log('WINNER: ' + highest.username)
     
@@ -137,7 +126,7 @@ const determineWinner = () => {
         console.log('BY NUMBER: ' + highest.username)
       }
     }
-    room.turn = room.users.indexOf(highest.username)
+    rooms[num].turn = rooms[num].users.indexOf(highest.username)
     console.log('POINTS: ' + points)
     console.log('WINNER: ' + highest.username)
     
@@ -147,39 +136,37 @@ const determineWinner = () => {
     type: 'GIVE_POINTS_AND_TURN',
     currentTurn: highest.username,
     points: points,
-    roomName: room.name
+    roomName: rooms[num].name
   })
 }
 
 const setGlobalCard = (newCard) => {
-  room.turn = (room.turn + 1) % room.users.length
-  room.cardField.push(newCard)
+  rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
+  rooms[num].cardField.push(newCard)
   broadcastMessage({
     type: 'SET_GLOBAL_CARD',
-    cardField: room.cardField,
-    currentTurn: room.users[room.turn],
-    roomName: room.name
+    cardField: rooms[num].cardField,
+    currentTurn: rooms[num].users[rooms[num].turn],
+    roomName: rooms[num].name
   })
-  if (room.cardField.length === room.users.length) {
+  if (rooms[num].cardField.length === rooms[num].users.length) {
     determineWinner()
   }
 }
 
 const clearField = () => {
-  room.cardField = []
+  rooms[num].cardField = []
   broadcastMessage({
     type: 'FIELD_CLEAR',
-    cardField: room.cardField,
-    roomName: room.name
+    cardField: [],
+    roomName: rooms[num].name
   })
 }
 
 io.on('connection', (socket) => {
   console.log('Someone has connected');
-  //console.log(socket.id)
   //broadcastMessage('someone has connected!');
   updateUserCount(1);
-  //console.log(socket)
 
 
   socket.send(JSON.stringify({
@@ -189,22 +176,27 @@ io.on('connection', (socket) => {
 
   socket.on('submitRoom', (data) => {
     console.log('newRoom: ' + data.roomName)
-    //rooms[req.body.room] = { users: {} }
+    var temp = deckLogic.shuffle( Object.assign([], defaultDeck))
+    var trump = temp.pop()
+    console.log('trump: ', trump)
+    temp.unshift(trump)
     rooms.push({
       name: data.roomName,
       users: [data.username],
-      trumpSuit: suits[Math.floor(Math.random() * suits.length)],
+      trumpSuit: trump.suit,
       turn: 0,
-      cardField: []
+      cardField: [],
+      deck: temp
     })
-    console.log(rooms[0].name)
+    console.log(rooms[rooms.length - 1].name)
     socket.join(data.roomName)
     socket.emit('sendRooms', rooms)
     const stuff = {
       players: rooms[rooms.length - 1].users,
       turn: rooms[rooms.length - 1].users[rooms[rooms.length - 1].turn],
       type: 'UPDATE_PLAYER_LIST',
-      roomName: data.roomName
+      roomName: data.roomName,
+      cards: rooms[rooms.length - 1].deck
     }
     //socket.in(data.roomName).emit('update', stuff)
     broadcastMessage(stuff)
@@ -223,7 +215,8 @@ io.on('connection', (socket) => {
           players: rooms[i].users,
           turn: rooms[i].users[rooms[i].turn],
           type: 'UPDATE_PLAYER_LIST',
-          roomName: data.roomName
+          roomName: data.roomName,
+          cards: rooms[rooms.length - 1].deck
 
         }
         console.log('CURRENT PLAYERS: ' + rooms[i].users)
@@ -231,11 +224,8 @@ io.on('connection', (socket) => {
 
       }
     }
-    //console.log('TYPE: ', stuff.type)
-    //socket.in(data.roomName).emit('update', stuff)
     broadcastMessage(stuff)
 
-    //console.log(rooms[0].users)
   })
 
   socket.on('getRooms', () => {
@@ -252,8 +242,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('remove', (data) => {
-
-    var temp = []
+    console.log('removing?')
     var stuff;
     for (var i = 0; i < rooms.length; i++) {
       if (rooms[i].name === data.room) {
@@ -261,7 +250,8 @@ io.on('connection', (socket) => {
         stuff = {
           type: 'UPDATE_PLAYER_LIST',
           players: rooms[i].users,
-          turn: data.turn
+          turn: data.turn,
+          cards: rooms[i].deck
         }
       }
       break;
@@ -275,7 +265,7 @@ io.on('connection', (socket) => {
       console.log(rooms[i].name)
       console.log(messageObject.room)
       if (rooms[i].name === messageObject.room) {
-        room = rooms[i]
+        num = i
         break;
       }
     }
@@ -289,7 +279,7 @@ io.on('connection', (socket) => {
       case 'GRAB_ROOMS':
         break;
       case 'DRAW_CARD':
-        drawCard(messageObject.drawn, messageObject.remainingCards);
+        drawCard();
         break;
       case 'UPDATE_PLAYERS':
         updatePlayers(messageObject.playerList);
@@ -301,11 +291,9 @@ io.on('connection', (socket) => {
         determineWinner();
         break;
     }
-    //console.log(message);
   });
 
   socket.on('disconnect', () => {
-    //broadcastMessage('someone has disconnected!');
     updateUserCount(-1);
     console.log('someone has disconnected!');
   });

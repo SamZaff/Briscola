@@ -1,5 +1,6 @@
 const DEFAULT_STATE = {
-  cards: [{
+  cards: [],
+  REMOVE_LATER: [{
     name: 'Ace of Gold',
     suit: 'Gold',
     value: 11,

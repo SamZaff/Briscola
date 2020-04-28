@@ -12,6 +12,7 @@ const Rooms = (players) => {
     
     window.onload = function() {
         console.log('onload test')
+        sessionStorage.removeItem('room')
         helper.helper().emit('getRooms')
         
     }

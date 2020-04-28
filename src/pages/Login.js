@@ -3,16 +3,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 const Login = ({ dispatch }) => {
-    const [wrongInfo, setWrongInfo] = React.useState(false);
-    const [existingAccount, setExistingAccount] = React.useState(false)
+    // const [wrongInfo, setWrongInfo] = React.useState(false);
+    // const [existingAccount, setExistingAccount] = React.useState(false)
 
 
     window.onload = function () {
-        console.log('%c TEST ON LOAD', 'color: orange;')
-        // const data = {
-        //     type: 'GET_PLAYERS',
-        // };
-        // // client to server
+        sessionStorage.removeItem('username')
+        sessionStorage.removeItem('room')
 
     }
     
@@ -39,13 +36,13 @@ const Login = ({ dispatch }) => {
                 </div>
                 <button onClick = {submitLoginForm} >Login</button>
             </form>
-            <div>
+            {/* <div>
                 {wrongInfo && (
                     <div>
                         Incorrect username/password
                     </div>
                 )}
-            </div>
+            </div> */}
             <div>
 
                 <h2>Sign Up</h2>
@@ -60,13 +57,13 @@ const Login = ({ dispatch }) => {
                 </form>
 
             </div>
-            <div>
+            {/* <div>
                 {existingAccount && (
                     <div>
                         Username already exists
                     </div>
                 )}
-            </div>
+            </div> */}
         </div>
     );
 

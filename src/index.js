@@ -40,7 +40,7 @@ socket.on('update', messageObject => {
       console.log('welp, this better print OR ELSE')
       store.dispatch(updatePlayerList(messageObject.players))
       store.dispatch(updateTurn(messageObject.turn))
-      //store.dispatch(updateCards(messageObject.cards))
+      store.dispatch(updateCards(messageObject.cards))
       break;
     case 'FIELD_CLEAR':
       store.dispatch(updateCardField(messageObject.cardField))

@@ -9,18 +9,19 @@ import helper from '../index'
 const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, checkWinner, score }) => {
   const [text, setText] = React.useState('');
   
-  window.onload = function () {
-    console.log('%c TEST ON LOAD', 'color: green;')
-    console.log(window.location.pathname)
-    const data = {
-      type: 'UPDATE_PLAYERS',
-      playerList: players,
-      room: sessionStorage.getItem('room')
 
-    };
-    helper.helper().emit('message', data)
+  // window.onload = function () {
+  //   console.log('%c TEST ON LOAD', 'color: green;')
+  //   console.log(window.location.pathname)
+  //   const data = {
+  //     type: 'UPDATE_PLAYERS',
+  //     playerList: players,
+  //     room: sessionStorage.getItem('room')
+
+  //   };
+  //   helper.helper().emit('message', data)
     
-  }
+  // }
   
   window.onbeforeunload = function () {
     console.log('ONBEFOREUNLOAD')
@@ -50,21 +51,23 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
   }
 
   const handleDraw = () => {
-    console.log(players)
-    hand.push(cards[Math.floor(Math.random() * cards.length)])
+    //console.log(players)
+    // hand.push(cards[Math.floor(Math.random() * cards.length)]) //DELETE LATER
+   // console.log('cards: ', cards.length)
+    hand.push(cards.pop())
     dispatch(updateHand(hand))
-    
+    console.log('cards: ', cards)
+    console.log(cards[0].suit + "(" + cards[0].name + ")")
     const data = {
       type: 'DRAW_CARD',
-      drawn: hand[hand.length - 1],
-      remainingCards: cards,
+      //drawn: hand[hand.length - 1], //DELETE LATER
+      //remainingCards: cards, //DELETE LATER
       room: sessionStorage.getItem('room')
     };
     // client to server
     //window.ws.send(JSON.stringify(data));
     helper.helper().emit('message', data)
   };
-
 
   const handleSubmit = () => {
     const data = {
@@ -83,7 +86,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
     const data = {
       type: 'SEND_CARD',
       newCard: card,
-      remainingCards: cards,
       room: sessionStorage.getItem('room')
     };
     // client to server
@@ -183,7 +185,9 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
       <div>
         {/* {cards.map((card, i) => <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" />)} */}
         Cards left in deck: {cards.length}
-
+      </div>
+      <div>
+        {/* Trump suit: {cards[0].suit} ({cards[0].name}) */}
       </div>
       <input value={text} onChange={e => setText(e.target.value)} />
       <button onClick={handleSubmit}>Submit</button>
