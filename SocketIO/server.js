@@ -17,32 +17,18 @@ var num; //this variable correlates to room# or which room in the array is being
 
 const notes = [];
 var suits = ['Clubs', 'Swords', 'Gold', 'Cups']
-userCount = 0;
 
 const broadcastMessage = (message) => {
   io.in(message.roomName).emit('update', message)
 };
 
-//DELETE UPDATE USER COUNT
-
-const updateUserCount = (increment) => {
-  userCount += increment
-  console.log('NUMBER OF CLIENTS: ' + userCount)
-  broadcastMessage({
-    type: 'UPDATE_USER_COUNT',
-    count: userCount,
-  });
-};
-
-//DELETE UPDATE USER COUNT
-
 const updatePlayers = () => {
-  console.log('turn: ', rooms[num].users[rooms[num].turn])
   broadcastMessage({
     type: 'UPDATE_PLAYER_LIST',
     players: rooms[num].users,
     currentTurn: rooms[num].users[rooms[num].turn],
-    roomName: rooms[num].name
+    roomName: rooms[num].name,
+    trump: rooms[num].trump
   })
 }
 
@@ -66,7 +52,7 @@ const drawCard = (/*drawnCard, remainingCards*/) => {
     currentTurn: rooms[num].users[rooms[num].turn],
     roomName: rooms[num].name
   })
-  
+
 
 }
 
@@ -82,11 +68,11 @@ const determineWinner = () => {
   var tempField = [...rooms[num].cardField]
 
   //cardField.some() checks to see if any of the cards are trump cards
-  if (rooms[num].cardField.some(item => item.card.suit === rooms[num].trumpSuit)) {
+  if (rooms[num].cardField.some(item => item.card.suit === rooms[num].trump.suit)) {
 
     for (var i = 0; i < rooms[num].users.length; i++) {
       points = points + rooms[num].cardField[i].card.value
-      if (rooms[num].cardField[i].card.suit !== rooms[num].trumpSuit) {
+      if (rooms[num].cardField[i].card.suit !== rooms[num].trump.suit) {
         tempField.splice(tempField.indexOf(rooms[num].cardField[i]), 1)
         //this has to be changed
       }
@@ -102,47 +88,51 @@ const determineWinner = () => {
       }
     }
   }
-  console.log(tempField.length)
-  console.log(tempField.some(item => item.card.value > 0))
-  for (var i = 0; i < tempField.length; i++) {
-    console.log(tempField[i].card.name)
-  }
+
   if (tempField.some(item => item.card.value > 0)) { //HIGHEST NEEDS TO BE HIGHEST.CARD.VALUE
     for (var i = 0; i < tempField.length; i++) {
       if (highest.card.value < tempField[i].card.value) {
         highest = tempField[i]
-        console.log('BY VALUE: ' + highest.username)
       }
     }
-    rooms[num].turn = rooms[num].users.indexOf(highest.username)
-    console.log('POINTS: ' + points)
-    console.log('WINNER: ' + highest.username)
-    
+    // rooms[num].turn = rooms[num].users.indexOf(highest.username)
+    rooms[num].turn = rooms[num].users.findIndex(function (item, i) {
+      if (item.username === highest.username) {
+        rooms[num].users[i].score += points
+        return highest.username
+      }
+    })
+
   }
   else {
     for (var i = 0; i < tempField.length; i++) {
       if (highest.card.number < tempField[i].card.number) {
         highest = tempField[i]
-        console.log('BY NUMBER: ' + highest.username)
       }
     }
-    rooms[num].turn = rooms[num].users.indexOf(highest.username)
-    console.log('POINTS: ' + points)
-    console.log('WINNER: ' + highest.username)
-    
+    // rooms[num].turn = rooms[num].users.indexOf(highest.username)
+    rooms[num].turn = rooms[num].users.findIndex(function (item, i) {
+      if (item.username === highest.username) {
+        rooms[num].users[i].score += points
+        return highest.username
+      }
+    })
+
   }
 
   broadcastMessage({
     type: 'GIVE_POINTS_AND_TURN',
-    currentTurn: highest.username,
+    currentTurn: { username: highest.username },
     points: points,
-    roomName: rooms[num].name
+    roomName: rooms[num].name,
+    updatedScores: rooms[num].users
   })
 }
 
-const setGlobalCard = (newCard) => {
+const setGlobalCards = (newCard) => {
   rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
   rooms[num].cardField.push(newCard)
+  rooms[num].playedCards++
   broadcastMessage({
     type: 'SET_GLOBAL_CARD',
     cardField: rooms[num].cardField,
@@ -151,6 +141,14 @@ const setGlobalCard = (newCard) => {
   })
   if (rooms[num].cardField.length === rooms[num].users.length) {
     determineWinner()
+  }
+  console.log('CARDS PLAYED: ' + rooms[num].playerdCards)
+  if (rooms[num].playedCards >= 40) {
+    console.log('PLAYED ALL CARDS')
+    broadcastMessage({
+      type: 'FINISH_GAME',
+      roomName: rooms[num].name
+    })
   }
 }
 
@@ -163,10 +161,37 @@ const clearField = () => {
   })
 }
 
+const restartGame = () => {
+  rooms[num].cardField = []
+  rooms[num].deck = deckLogic.shuffle(Object.assign([], defaultDeck))
+  rooms[num].trump =rooms[num].deck.pop()
+  rooms[num].deck.unshift(rooms[num].trump)
+  rooms[num].playedCards = 0
+  
+  for (var i = 0; i < rooms[num].users.length; i++) {
+    rooms[num].users[i].score = 0
+  }
+  broadcastMessage({
+    type: 'UPDATE_PLAYER_LIST',
+    turn: rooms[num].users[0],
+    trump:  rooms[num].trump,
+    cards:  rooms[num].deck,
+    players: rooms[num].users,
+    roomName: rooms[num].name,
+    cardField: []
+  })
+  /*players: rooms[rooms.length - 1].users,
+      turn: rooms[rooms.length - 1].users[rooms[rooms.length - 1].turn],
+      type: 'UPDATE_PLAYER_LIST',
+      roomName: data.roomName,
+      cards: rooms[rooms.length - 1].deck,
+      trump */
+}
+
 io.on('connection', (socket) => {
   console.log('Someone has connected');
+  console.log(socket.id)
   //broadcastMessage('someone has connected!');
-  updateUserCount(1);
 
 
   socket.send(JSON.stringify({
@@ -175,20 +200,21 @@ io.on('connection', (socket) => {
   }))
 
   socket.on('submitRoom', (data) => {
-    console.log('newRoom: ' + data.roomName)
-    var temp = deckLogic.shuffle( Object.assign([], defaultDeck))
+    var temp = deckLogic.shuffle(Object.assign([], defaultDeck))
     var trump = temp.pop()
-    console.log('trump: ', trump)
     temp.unshift(trump)
     rooms.push({
       name: data.roomName,
-      users: [data.username],
-      trumpSuit: trump.suit,
+      users: [{
+        username: data.username,
+        score: 0
+      }],
+      trump: trump,
       turn: 0,
       cardField: [],
-      deck: temp
+      deck: temp,
+      playedCards: 0
     })
-    console.log(rooms[rooms.length - 1].name)
     socket.join(data.roomName)
     socket.emit('sendRooms', rooms)
     const stuff = {
@@ -196,7 +222,8 @@ io.on('connection', (socket) => {
       turn: rooms[rooms.length - 1].users[rooms[rooms.length - 1].turn],
       type: 'UPDATE_PLAYER_LIST',
       roomName: data.roomName,
-      cards: rooms[rooms.length - 1].deck
+      cards: rooms[rooms.length - 1].deck,
+      trump
     }
     //socket.in(data.roomName).emit('update', stuff)
     broadcastMessage(stuff)
@@ -209,19 +236,28 @@ io.on('connection', (socket) => {
     var stuff;
     for (var i = 0; i < rooms.length; i++) {
       if (rooms[i].name === data.roomName) {
-        console.log('if statement test')
-        rooms[i].users.push(data.username)
+        rooms[i].users.push({
+          username: data.username,
+          score: 0
+        })
         stuff = {
           players: rooms[i].users,
           turn: rooms[i].users[rooms[i].turn],
           type: 'UPDATE_PLAYER_LIST',
           roomName: data.roomName,
-          cards: rooms[rooms.length - 1].deck
-
+          cards: rooms[rooms.length - 1].deck,
+          trump: rooms[i].trump
         }
-        console.log('CURRENT PLAYERS: ' + rooms[i].users)
         socket.join(data.roomName)
-
+        var firstProp;
+        var roomSockets = io.sockets.adapter.rooms[data.roomName].sockets
+        // for (var key in roomSockets) {
+        //   if (roomSockets.sockets.hasOwnProperty(key)) {
+        //     firstProp = roomSockets[key];
+        //     break;
+        //   }
+        // }
+        // console.log(firstProp)
       }
     }
     broadcastMessage(stuff)
@@ -242,28 +278,45 @@ io.on('connection', (socket) => {
   })
 
   socket.on('remove', (data) => {
-    console.log('removing?')
     var stuff;
-    for (var i = 0; i < rooms.length; i++) {
-      if (rooms[i].name === data.room) {
-        rooms[i].users.splice(rooms.indexOf(data.username), 1)
-        stuff = {
-          type: 'UPDATE_PLAYER_LIST',
-          players: rooms[i].users,
-          turn: data.turn,
-          cards: rooms[i].deck
+    var temp;
+    var tempTurn;
+    console.log(data.room)
+    if (data.room) {
+      for (var i = 0; i < rooms.length; i++) {
+        if (rooms[i].name === data.room) {
+          if (data.turn) {
+            tempTurn = data.turn
+          }
+          else {
+            tempTurn = rooms[i].turn
+          }
+          rooms[i].users.find(function (item, j) {
+            if (item.username === data.username) {
+              temp = j
+            }
+          })
+          rooms[i].users.splice(temp, 1)
+          stuff = {
+            type: 'UPDATE_PLAYER_LIST',
+            players: rooms[i].users,
+            turn: tempTurn,
+            cards: rooms[i].deck,
+            trump: rooms[i].trump
+          }
         }
+        break;
       }
-      break;
-    }
 
-    socket.in(data.room).emit('update', stuff)
+      socket.in(data.room).emit('update', stuff)
+    }
+    else {
+      console.log('not actively in room')
+    }
   })
 
   socket.on('message', (messageObject) => {
     for (var i = 0; i < rooms.length; i++) {
-      console.log(rooms[i].name)
-      console.log(messageObject.room)
       if (rooms[i].name === messageObject.room) {
         num = i
         break;
@@ -271,7 +324,7 @@ io.on('connection', (socket) => {
     }
     switch (messageObject.type) {
       case 'SEND_CARD':
-        setGlobalCard(messageObject.newCard);
+        setGlobalCards(messageObject.newCard);
         break;
       case 'SEND_MESSAGE':
         broadcastAllMessages(messageObject.newNote);
@@ -290,11 +343,14 @@ io.on('connection', (socket) => {
       case 'CHECK_WINNER':
         determineWinner();
         break;
+      case 'RESTART_GAME':
+        restartGame();
+        break;
     }
   });
 
   socket.on('disconnect', () => {
-    updateUserCount(-1);
+    console.log(socket.id)
     console.log('someone has disconnected!');
   });
 

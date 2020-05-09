@@ -1,34 +1,60 @@
 import React from 'react';
-import './App.css';
+import './App.css'
 import { Switch, Route } from "react-router-dom";
 import Login from './pages/Login';
 import Briscola from './pages/Briscola';
 import Rooms from './pages/Rooms';
 import { connect } from 'react-redux';
-import { Navbar, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap'
-
+import { Navbar, Nav} from 'react-bootstrap'
+import helper from './index'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const App = ({ activeUsers }) => {
+const App = () => {
+  window.onerror = function() {
+    return (
+      <div>
+        AN ERROR OCCURED
+      </div>
+    )
+  }
+
   return (
     <div className="App">
       <div>
         <Navbar bg="dark">
-          <Navbar.Brand href="#home" style={{ color: 'white', fontWeight: 'bold' }}>Briscola</Navbar.Brand>
+          <Navbar.Brand style={{ color: 'white', fontWeight: 'bold' }}>Briscola</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
               {sessionStorage.getItem('username') && (
-                <Nav.Link href="/Rooms" style={{ color: 'white' } }>Lobby</Nav.Link>
+                <Nav.Link href="/Rooms" style={{ color: 'white' } } onClick = {() => {
+                  const data = {
+                    room: '',
+                    username: ''
+                  };
+                  data.room = Object.assign('', sessionStorage.getItem('room'))
+                  data.username = Object.assign('', sessionStorage.getItem('username'))
+                  sessionStorage.removeItem('room')
+                  helper.helper.emit('remove', data)
+                }}>Lobby</Nav.Link>
               )}
               {sessionStorage.getItem('username') && (
-                <Nav.Link href="/" style={{ color: 'white', display: 'right' }}>Signout</Nav.Link>
+                <Nav.Link href="/" style={{ color: 'white', display: 'right' }} onClick = {() => {
+                  const data = {
+                    room: 'shit',
+                    username: 'shit'
+                  };
+                  data.room = Object.assign([], sessionStorage.getItem('room'))
+                  data.username = Object.assign([], sessionStorage.getItem('username'))
+                  sessionStorage.removeItem('username')
+                  sessionStorage.removeItem('room')
+                  helper.helper.emit('remove', data)
+                }}>Signout</Nav.Link>
               )}
             </Nav>
           </Navbar.Collapse>
         </Navbar>
       </div>
-      {/* <div className="active-users">active users: {activeUsers}</div> */}
       <Switch>
         <Route path="/Briscola" component={Briscola} />
         <Route path="/Rooms" component={Rooms} />

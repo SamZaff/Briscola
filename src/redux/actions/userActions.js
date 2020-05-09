@@ -10,11 +10,6 @@ export const setIsLoggedIn = isLoggedIn => ({
   isLoggedIn,
 });
 
-export const setActiveUsers = activeUsers => ({
-  type: 'SET_ACTIVE_USERS',
-  activeUsers,
-});
-
 export const updatePlayerList = players => ({
   type: 'UPDATE_PLAYER_LIST',
   players

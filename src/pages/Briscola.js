@@ -1,14 +1,15 @@
 import React from 'react';
 
 import { connect } from 'react-redux';
-import { updateHand, toggleCheckWinner, increaseScore } from '../redux/actions/cardsActions'
-import { Redirect} from 'react-router-dom';
+import { updateHand } from '../redux/actions/cardsActions'
+import { Redirect } from 'react-router-dom';
 import helper from '../index'
+import '../App.css'
 
 
-const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, checkWinner, score }) => {
+const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOverallWinner, trump }) => {
   const [text, setText] = React.useState('');
-  
+
 
   // window.onload = function () {
   //   console.log('%c TEST ON LOAD', 'color: green;')
@@ -20,13 +21,13 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
 
   //   };
   //   helper.helper().emit('message', data)
-    
+
   // }
-  
+
   window.onbeforeunload = function () {
     console.log('ONBEFOREUNLOAD')
-    if (turn === this.sessionStorage.getItem('username')){
-      turn = players[(players.indexOf(turn) + 1)%players.length]
+    if (turn.username === this.sessionStorage.getItem('username')) {
+      turn = players[(players.indexOf(turn) + 1) % players.length]
     }
     const data = {
       room: sessionStorage.getItem('room'),
@@ -34,38 +35,19 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
       turn
     };
     // client to server
-    //window.ws.send(JSON.stringify(data));
     // helper.helper().emit('message', data)
     helper.helper().emit('remove', data)
-    
-  }
-  
-  if (checkWinner) {
-    if (turn === sessionStorage.getItem('username')) {
-      score += points
-    console.log('EARNED POINTS: ' + points)
-    console.log('SCORE: ' + score)
-    dispatch(increaseScore(score))
-    }
-    dispatch(toggleCheckWinner(false))
+
   }
 
   const handleDraw = () => {
-    //console.log(players)
-    // hand.push(cards[Math.floor(Math.random() * cards.length)]) //DELETE LATER
-   // console.log('cards: ', cards.length)
     hand.push(cards.pop())
     dispatch(updateHand(hand))
-    console.log('cards: ', cards)
-    console.log(cards[0].suit + "(" + cards[0].name + ")")
     const data = {
       type: 'DRAW_CARD',
-      //drawn: hand[hand.length - 1], //DELETE LATER
-      //remainingCards: cards, //DELETE LATER
       room: sessionStorage.getItem('room')
     };
     // client to server
-    //window.ws.send(JSON.stringify(data));
     helper.helper().emit('message', data)
   };
 
@@ -76,7 +58,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
       room: sessionStorage.getItem('room')
     };
     // client to server
-    //window.ws.send(JSON.stringify(data));
     helper.helper().emit('message', data)
     setText('');
   };
@@ -90,7 +71,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
     };
     // client to server
     helper.helper().emit('message', data)
-    //window.ws.send(JSON.stringify(data));
 
   };
 
@@ -101,14 +81,45 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
     };
     //client to server
     helper.helper().emit('message', data)
-    //window.ws.send(JSON.stringify(data))
+  }
+
+  const restartGame = () => {
+    const data = {
+      type: 'RESTART_GAME',
+      room: sessionStorage.getItem('room')
+    }
+    helper.helper().emit('message', data)
+  }
+
+  const getHighestScore = () => {
+    var highest = [{username: '', score: 0}];
+    var tieCase = []
+    for (var i = 0; i < players.length; i++) {
+      if (highest[0].score < players[i].score) {
+        highest = [players[i]]
+        console.log(highest)
+      }
+      else if (highest[0].score === players[i].score) {
+        highest.push(players[i])
+        console.log(highest)
+      }
+
+    }
+    if (highest.length === 1) {
+      console.log('HIGHEST: ' + highest[0])
+      return highest[0].username
+    }
+    else {
+      console.log('WE HAVE A TIE!')
+      for (var i = 0; i < highest.length; i++) {
+        tieCase.push(highest[i].username)
+      }
+      return tieCase.join(' & ')
+    }
   }
 
   return (
     <div>
-      <div>
-        Score: {score}
-      </div>
       <div>
         {!sessionStorage.getItem('username') && (
           <Redirect to="/" />
@@ -118,46 +129,57 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
         {players && (
           <div>
             Current Players:
-              {players.map((card, i) =>
-              <div>{card}</div>
+            {players.map((player, i) =>
+              <div>{player.username}'s score:{player.score}</div>
             )}
+            <div>Trump suit: {trump.suit} ({trump.name})</div>
           </div>
         )}
 
       </div>
       <h2>Briscola</h2>
-      {/* {(cards === 0 && hand === 0 &&)} */}
       <div>
-        <button onClick={() => {
-          console.log(turn)
-          if ((hand.length < 3) && turn === sessionStorage.getItem('username') && cardField.length === 0) {
-            handleDraw()
-          }
-        }}>
-          Draw
-        </button>
+        {cards.length > 0 && (
+          <button onClick={() => {
+
+            if ((hand.length < 3) && turn.username === sessionStorage.getItem('username') && cardField.length === 0) {
+              handleDraw()
+            }
+          }}>
+            Draw
+          </button>
+        )}
+
+      </div>
+      <div>
+        {checkOverallWinner && (
+          <div>
+            <h3>{getHighestScore()} Wins!</h3>
+            <button onClick = {() => restartGame()}>Play Again</button>
+          </div>
+        )}
       </div>
       <div>
 
 
-        <div>{hand.map((card, i) =>
+        <div >{hand.map((card, i) =>
+          // <div id = "playerHand"> 
           <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" alt={card.name} onClick={() => {
-            if (turn === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
+            if (turn.username === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
               handleCardField({
                 username: sessionStorage.getItem('username'),
                 card: card
               })
-              //NOTE TO FUTURE SELF: you may be able to change the above line to JSON data, that 
-              //                     contains both the card and the username
               hand.splice(i, 1)
             }
             else {
-              console.log('TURN: ' + turn)
+              console.log('TURN: ' + turn.username)
               console.log('HAND SIZE: ' + hand.length)
               console.log('FIELD SIZE: ' + cardField.length)
             }
           }
           } />
+          // </div>
         )}</div>
 
 
@@ -173,27 +195,25 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, points, che
       </div>
 
       <div>
-          {(cardField.length === players.length && cardField.length !== 0) && (
-            <div>
-              <button onClick = {() => {
-                clearField()
-              }}>Clear</button>
-            </div>
-          )}
+        {(cardField.length === players.length && cardField.length !== 0) && (
+          <div>
+            <button onClick={() => {
+              clearField()
+            }}>Clear</button>
+          </div>
+        )}
       </div>
 
       <div>
         {/* {cards.map((card, i) => <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" />)} */}
         Cards left in deck: {cards.length}
       </div>
-      <div>
-        {/* Trump suit: {cards[0].suit} ({cards[0].name}) */}
-      </div>
+
       <input value={text} onChange={e => setText(e.target.value)} />
       <button onClick={handleSubmit}>Submit</button>
 
       {!sessionStorage.getItem('username') && (
-        <Redirect to ="/"/>
+        <Redirect to="/" />
       )}
     </div>
   );
@@ -206,9 +226,8 @@ const mapStateToProps = state => ({
   hand: state.cardsReducer.hand,
   players: state.userReducer.players,
   turn: state.cardsReducer.turn,
-  points: state.cardsReducer.points,
-  checkWinner: state.cardsReducer.checkWinner,
-  score: state.cardsReducer.score
+  checkOverallWinner: state.cardsReducer.checkOverallWinner,
+  trump: state.cardsReducer.trump
 });
 
 export default connect(mapStateToProps)(Briscola);

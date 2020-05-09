@@ -4,7 +4,6 @@
 const INITIAL_STATE = {
   email: 'temp',
   isLoggedIn: false,
-  activeUsers: 0,
   players: [],
 };
 
@@ -23,11 +22,6 @@ const userReducer = (state = INITIAL_STATE, action) => {
         // email: state.email,
         // isLoggedIn: state.isLoggedIn,
         email: action.email,
-      };
-    case 'SET_ACTIVE_USERS':
-      return {
-        ...state,
-        activeUsers: action.activeUsers,
       };
     
     case 'UPDATE_PLAYER_LIST':

@@ -1,17 +1,11 @@
 import React from 'react';
 //import '../App.css'
 import { connect } from 'react-redux';
+import {Redirect} from 'react-router-dom'
 
 const Login = ({ dispatch }) => {
     // const [wrongInfo, setWrongInfo] = React.useState(false);
     // const [existingAccount, setExistingAccount] = React.useState(false)
-
-
-    window.onload = function () {
-        sessionStorage.removeItem('username')
-        sessionStorage.removeItem('room')
-
-    }
     
     const submitLoginForm = () => {
         sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
@@ -64,6 +58,9 @@ const Login = ({ dispatch }) => {
                     </div>
                 )}
             </div> */}
+            {sessionStorage.getItem('username') && (
+                <Redirect to = "/Rooms"/>
+            )}
         </div>
     );
 

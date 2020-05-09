@@ -7,9 +7,9 @@ import { createStore } from 'redux';
 import rootReducer from './redux/reducers/rootReducer';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { setActiveUsers, updatePlayerList } from './redux/actions/userActions';
+import { updatePlayerList } from './redux/actions/userActions';
 import { updateNotes } from './redux/actions/notesActions';
-import { updateCards, updateTurn, updateCardField, updatePoints, toggleCheckWinner } from './redux/actions/cardsActions'
+import { updateCards, updateTurn, updateCardField, toggleCheckOverallWinner, setTrumpSuit } from './redux/actions/cardsActions'
 import { applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'
 import socketIOClient from 'socket.io-client'
@@ -20,9 +20,6 @@ const store = createStore(rootReducer, applyMiddleware(thunk));
 socket.on('update', messageObject => {
     console.log(messageObject.type)
     switch (messageObject.type) {
-    case 'UPDATE_USER_COUNT':
-      store.dispatch(setActiveUsers(messageObject.count));
-      break;
     case 'UPDATE_MESSAGES':
       store.dispatch(updateNotes(messageObject.notes))
       // put it here
@@ -37,18 +34,25 @@ socket.on('update', messageObject => {
       store.dispatch(updateTurn(messageObject.currentTurn))
       break;
     case 'UPDATE_PLAYER_LIST':
-      console.log('welp, this better print OR ELSE')
       store.dispatch(updatePlayerList(messageObject.players))
       store.dispatch(updateTurn(messageObject.turn))
       store.dispatch(updateCards(messageObject.cards))
+      store.dispatch(setTrumpSuit(messageObject.trump))
+      if (messageObject.cardField) {
+        store.dispatch(updateCardField(messageObject.cardField))
+        store.dispatch(toggleCheckOverallWinner(false))
+      }
       break;
     case 'FIELD_CLEAR':
       store.dispatch(updateCardField(messageObject.cardField))
       break;
     case 'GIVE_POINTS_AND_TURN':
       store.dispatch(updateTurn(messageObject.currentTurn))
-      store.dispatch(updatePoints(messageObject.points))
-      store.dispatch(toggleCheckWinner(true))
+      store.dispatch(updatePlayerList(messageObject.updatedScores))
+      break;
+    case 'FINISH_GAME':
+      console.log('GAME FINISHED')
+      store.dispatch(toggleCheckOverallWinner(true))
       break;
     default:
   }

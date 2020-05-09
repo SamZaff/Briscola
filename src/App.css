@@ -65,7 +65,17 @@ ul {
   text-align: center;
 }
 
-.Navbar {
-  color: white;
-  
+
+.App #playerHand {
+  bottom: 20%;
+  left: 50%;
+  margin: 0 auto;
+  position: fixed;
+  animation-name: drawCard;
+  animation-duration: .5;
+}
+
+@keyframes drawCard {
+  0%   {left:50%; top:50%px;}
+  100%   {background-color:red; left:50%; bottom: 20%;}
 }

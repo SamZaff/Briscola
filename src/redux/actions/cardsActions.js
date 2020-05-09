@@ -18,17 +18,17 @@ export const updateTurn = turn => ({
     turn
 })
 
-export const updatePoints = points => ({
-    type: 'UPDATE_POINTS',
-    points
-})
-
-export const toggleCheckWinner = checkWinner => ({
-    type: 'CHECK_WINNER',
-    checkWinner
-})
-
 export const increaseScore = score => ({
     type: 'INCREASE_SCORE',
     score
+})
+
+export const toggleCheckOverallWinner = checkOverallWinner => ({
+    type: 'CHECK_OVERALL_WINNER',
+    checkOverallWinner
+})
+
+export const setTrumpSuit = trump => ({
+    type: 'SET_TRUMP_SUIT',
+    trump
 })
