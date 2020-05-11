@@ -34,6 +34,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       username: sessionStorage.getItem('username'),
       turn
     };
+    sessionStorage.removeItem('room')
     // client to server
     // helper.helper().emit('message', data)
     helper.helper().emit('remove', data)
@@ -111,8 +112,8 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     }
     else {
       console.log('WE HAVE A TIE!')
-      for (var i = 0; i < highest.length; i++) {
-        tieCase.push(highest[i].username)
+      for (var j = 0; j < highest.length; j++) {
+        tieCase.push(highest[j].username)
       }
       return tieCase.join(' & ')
     }
@@ -125,6 +126,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
           <Redirect to="/" />
         )}
       </div>
+      <h1>Briscola</h1>
       <div>
         {players && (
           <div>
@@ -132,19 +134,22 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
             {players.map((player, i) =>
               <div>{player.username}'s score:{player.score}</div>
             )}
+            {players.length === 1 && (
+              <h3> <b>Waiting for players...</b></h3>
+            )}
             <div>Trump suit: {trump.suit} ({trump.name})</div>
           </div>
         )}
 
       </div>
-      <h2>Briscola</h2>
+      
       <div>
-        {cards.length > 0 && (
+        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 &&(
           <button onClick={() => {
 
-            if ((hand.length < 3) && turn.username === sessionStorage.getItem('username') && cardField.length === 0) {
+            //if ((hand.length < 3) && turn.username === sessionStorage.getItem('username') && cardField.length === 0) {
               handleDraw()
-            }
+            //}
           }}>
             Draw
           </button>
@@ -154,7 +159,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       <div>
         {checkOverallWinner && (
           <div>
-            <h3>{getHighestScore()} Wins!</h3>
+            <h2>{getHighestScore()} Wins!</h2>
             <button onClick = {() => restartGame()}>Play Again</button>
           </div>
         )}

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom'
 import helper from '../index'
+import '../App.css'
 
 const Rooms = (players) => {
 
@@ -9,6 +10,7 @@ const Rooms = (players) => {
     const [newRoom, setNewRoom] = React.useState('');
     const [isRedirect, setIsRedirect] = React.useState(false);
     const [isTaken, setIsTaken] = React.useState(false);
+    const [modal, toggleModal] = React.useState(false);
 
     window.onload = function () {
         console.log('onload test')
@@ -23,6 +25,7 @@ const Rooms = (players) => {
 
             helper.helper().on('sendRooms', rooms => {
                 setRooms(rooms)
+                console.log(rooms)
             })
         }
     }, []);
@@ -48,15 +51,15 @@ const Rooms = (players) => {
     }
 
     const joinRoom = (room) => {
+        console.log(room.users.includes(sessionStorage.getItem('username')))
         var data = {
             username: sessionStorage.getItem('username'),
-            roomName: room
+            roomName: room.name
         }
-        sessionStorage.setItem('room', room)
+        sessionStorage.setItem('room', room.name)
         helper.helper().emit('joinRoom', data)
         console.log('PLAYERS: ', players)
         setIsRedirect(true)
-        //console.log(players)
     }
 
 
@@ -66,7 +69,7 @@ const Rooms = (players) => {
                 {!sessionStorage.getItem('username') && (
                     <Redirect to="/" />
                 )}
-                <h2>Welcome, {sessionStorage.getItem('username')}</h2>
+                <h2 className = "h2">Welcome, {sessionStorage.getItem('username')}</h2>
             </div>
             <div>Rooms:</div>
             <div>
@@ -74,8 +77,12 @@ const Rooms = (players) => {
                     <div key={i}>
                         <div>{room.name}</div>
                         <div>{room.users.length}/4</div>
-                        {room.users.length < 4 && (
-                            <button onClick={() => joinRoom(room.name)}>Join</button>
+                        {room.users.length < 4 && !room.users.some(item => item.username === sessionStorage.getItem('username')) && (
+
+                            <button onClick={() => joinRoom(room)}>Join</button>
+                        )}
+                        {room.users.some(item => item.username === sessionStorage.getItem('username')) && (
+                            <div> <b> ALREADY JOINED</b> </div>
                         )}
                         {room.users.length >= 4 && (
                             <div> <b>FULL</b> </div>
@@ -87,6 +94,24 @@ const Rooms = (players) => {
                 <input type="text" value={newRoom} onChange={e => setNewRoom(e.target.value)} required />
                 <button onClick={submitRoom}>New Room</button>
             </form>
+            {!modal && (
+                <div>
+                    <button onClick={() => toggleModal(true)}>modal test</button>
+                </div>
+            )}
+            {modal && (
+                <div>
+                    
+                    <div className="modal">
+                        <div className="modal_content"> 
+                            <span className="close" onClick={() => toggleModal(false)} >
+                                &times;
+                                </span>
+                            <a>Waiting for host to accept invite...</a>
+                        </div>
+                    </div>
+                </div>
+            )}
             {isRedirect && (
                 <Redirect to="/Briscola" />
             )}

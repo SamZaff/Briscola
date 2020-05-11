@@ -40,6 +40,22 @@ const broadcastAllMessages = (newNote) => {
   });
 };
 
+const sendRooms = () => {
+  for (var i = 0; i < rooms.length; i) {
+    if (!io.sockets.adapter.rooms[rooms[i].name]) {
+      console.log('room successfully removed')
+      rooms.splice(i, 1)
+    }
+    else {
+      i++
+    }
+  }
+  if (rooms.length === 0) {
+    console.log('no rooms left')
+  }
+  io.sockets.emit('sendRooms', rooms)
+}
+
 //******GAME LOGIC******
 
 const drawCard = (/*drawnCard, remainingCards*/) => {
@@ -142,7 +158,7 @@ const setGlobalCards = (newCard) => {
   if (rooms[num].cardField.length === rooms[num].users.length) {
     determineWinner()
   }
-  console.log('CARDS PLAYED: ' + rooms[num].playerdCards)
+  console.log('CARDS PLAYED: ' + rooms[num].playedCards)
   if (rooms[num].playedCards >= 40) {
     console.log('PLAYED ALL CARDS')
     broadcastMessage({
@@ -164,18 +180,19 @@ const clearField = () => {
 const restartGame = () => {
   rooms[num].cardField = []
   rooms[num].deck = deckLogic.shuffle(Object.assign([], defaultDeck))
-  rooms[num].trump =rooms[num].deck.pop()
+  rooms[num].trump = rooms[num].deck.pop()
   rooms[num].deck.unshift(rooms[num].trump)
   rooms[num].playedCards = 0
-  
+  rooms[num].turn = 0
+
   for (var i = 0; i < rooms[num].users.length; i++) {
     rooms[num].users[i].score = 0
   }
   broadcastMessage({
     type: 'UPDATE_PLAYER_LIST',
     turn: rooms[num].users[0],
-    trump:  rooms[num].trump,
-    cards:  rooms[num].deck,
+    trump: rooms[num].trump,
+    cards: rooms[num].deck,
     players: rooms[num].users,
     roomName: rooms[num].name,
     cardField: []
@@ -216,7 +233,8 @@ io.on('connection', (socket) => {
       playedCards: 0
     })
     socket.join(data.roomName)
-    socket.emit('sendRooms', rooms)
+    //io.sockets.emit('sendRooms', rooms)
+    sendRooms()
     const stuff = {
       players: rooms[rooms.length - 1].users,
       turn: rooms[rooms.length - 1].users[rooms[rooms.length - 1].turn],
@@ -249,6 +267,8 @@ io.on('connection', (socket) => {
           trump: rooms[i].trump
         }
         socket.join(data.roomName)
+        // io.sockets.emit('sendRooms', rooms)
+        sendRooms()
         var firstProp;
         var roomSockets = io.sockets.adapter.rooms[data.roomName].sockets
         // for (var key in roomSockets) {
@@ -281,7 +301,7 @@ io.on('connection', (socket) => {
     var stuff;
     var temp;
     var tempTurn;
-    console.log(data.room)
+    console.log(data)
     if (data.room) {
       for (var i = 0; i < rooms.length; i++) {
         if (rooms[i].name === data.room) {
@@ -292,11 +312,14 @@ io.on('connection', (socket) => {
             tempTurn = rooms[i].turn
           }
           rooms[i].users.find(function (item, j) {
-            if (item.username === data.username) {
-              temp = j
+            if (item) {
+              if (item.username === data.username) {
+                temp = j
+                rooms[i].users.splice(temp, 1)
+
+              }
             }
           })
-          rooms[i].users.splice(temp, 1)
           stuff = {
             type: 'UPDATE_PLAYER_LIST',
             players: rooms[i].users,
@@ -308,7 +331,11 @@ io.on('connection', (socket) => {
         break;
       }
 
+      sendRooms()
+      console.log('AFTER SEND ROOMS TEST')
       socket.in(data.room).emit('update', stuff)
+      // io.sockets.emit('sendRooms', rooms)
+
     }
     else {
       console.log('not actively in room')
@@ -350,7 +377,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log(socket.id)
     console.log('someone has disconnected!');
   });
 

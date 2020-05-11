@@ -7,7 +7,7 @@ import Rooms from './pages/Rooms';
 import { connect } from 'react-redux';
 import { Navbar, Nav} from 'react-bootstrap'
 import helper from './index'
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
   window.onerror = function() {
@@ -20,41 +20,40 @@ const App = () => {
 
   return (
     <div className="App">
-      <div>
-        <Navbar bg="dark">
-          <Navbar.Brand style={{ color: 'white', fontWeight: 'bold' }}>Briscola</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="mr-auto">
+      
+        <Navbar className = "nav-bar">
+          <Navbar.Brand className = "nav-bar-title">Briscola</Navbar.Brand>
+          <Navbar.Collapse>
+            <Nav>
               {sessionStorage.getItem('username') && (
-                <Nav.Link href="/Rooms" style={{ color: 'white' } } onClick = {() => {
-                  const data = {
-                    room: '',
-                    username: ''
-                  };
-                  data.room = Object.assign('', sessionStorage.getItem('room'))
-                  data.username = Object.assign('', sessionStorage.getItem('username'))
+                <Nav.Link className = "nav-bar-content" href="/Rooms" style={{ color: 'white' } } onClick = {() => {
+                  // const data = {
+                  //   room: '',
+                  //   username: ''
+                  // };
+                  const room = sessionStorage.getItem('room')
+                  const username = sessionStorage.getItem('username')
                   sessionStorage.removeItem('room')
-                  helper.helper.emit('remove', data)
+                  helper.helper().emit('remove', {room, username})
                 }}>Lobby</Nav.Link>
               )}
               {sessionStorage.getItem('username') && (
-                <Nav.Link href="/" style={{ color: 'white', display: 'right' }} onClick = {() => {
-                  const data = {
-                    room: 'shit',
-                    username: 'shit'
-                  };
-                  data.room = Object.assign([], sessionStorage.getItem('room'))
-                  data.username = Object.assign([], sessionStorage.getItem('username'))
+                <Nav.Link className = "nav-bar-content" href="/" style={{ color: 'white', display: 'right' }} onClick = {() => {
+                  // const data = {
+                  //   room: '',
+                  //   username: ''
+                  // };
+                  const room = sessionStorage.getItem('room')
+                  const username = sessionStorage.getItem('username')
                   sessionStorage.removeItem('username')
                   sessionStorage.removeItem('room')
-                  helper.helper.emit('remove', data)
+                  helper.helper().emit('remove', {room, username})
                 }}>Signout</Nav.Link>
               )}
             </Nav>
           </Navbar.Collapse>
         </Navbar>
-      </div>
+      
       <Switch>
         <Route path="/Briscola" component={Briscola} />
         <Route path="/Rooms" component={Rooms} />

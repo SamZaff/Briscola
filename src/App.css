@@ -1,6 +1,15 @@
 .App {
   text-align: center;
-  /* background-color: grey; */
+}
+
+body {
+  background-color: #f8f8ff;
+  /* background-color: whitesmoke; */
+}
+
+.h2 {
+  font-size: 2rem;
+  
 }
 
 .App-logo {
@@ -18,36 +27,48 @@
   color: white;
 }
 
-.App-link {
-  color: #09d3ac;
-}
-
 .nav-bar{
-  display: flex;
-  justify-content: center;
+  position: relative;
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+justify-content: space-between;
+padding: .5rem 1rem;
+background-color: #282c34;
 }
 
-.nav-bar a{
-  padding: 5px;
+.nav-bar-content{
+  padding: 8px;
   display: inline-block;
+  color: green;
+  font-size: larger;
+  text-decoration: none;
+}
+
+.nav-bar-content:hover {
+  color: grey
+}
+
+.nav-bar-title {
+  font-size: 1.5rem;
+  color: white;
+  font-weight: bold;
+
+}
+
+.color-nav {
+  background-color: #282c34;
 }
 
 li {
-  float: left;
   padding-left: 5px;
   padding-right: 5px;
   display: inline;
 }
 
-.active-users{
-  background: #282c34;
-  color: whitesmoke;
-  padding: 2px;
-}
-
 ul {
   list-style-type: none;
-  margin: 0;
+  /* margin: 0; */
   padding-top: 5px;
   padding-bottom: 5px;
   overflow: hidden;
@@ -69,10 +90,53 @@ ul {
 .App #playerHand {
   bottom: 20%;
   left: 50%;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   position: fixed;
   animation-name: drawCard;
   animation-duration: .5;
+}
+
+.modal {
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(0, 0, 0, 0.25); */
+}
+
+.modal_content {
+  background-color: #3e4450;
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  width: 40%;
+  padding: 20px;
+  border-radius: 5px;
+  border: 2px solid black;
+  color: white;
+}
+
+.close {
+  color: white;
+  font-size: x-large;
+  float: right;
+  
+}
+
+.close:hover {
+  color: grey;
+  cursor: pointer;
+}
+
+
+
+.nav-content {
+  color: green;
+}
+
+.nav_content:hover {
+  color: grey;
+  /* cursor: pointer; */
 }
 
 @keyframes drawCard {
