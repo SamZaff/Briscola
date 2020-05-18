@@ -4,8 +4,8 @@ const DEFAULT_STATE = {
   hand: [],
   turn: '',
   checkOverallWinner: false,
-  trump: {}
-
+  trump: {},
+  joinRequest: []
 };
 
 const cardsReducer = (state = DEFAULT_STATE, action) => {
@@ -44,6 +44,11 @@ const cardsReducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         trump: action.trump
+      }
+    case 'TOGGLE_JOIN_REQUEST':
+      return {
+        ...state,
+        joinRequest: action.joinRequest
       }
     default:
       return state;

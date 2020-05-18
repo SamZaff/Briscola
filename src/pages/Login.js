@@ -1,66 +1,69 @@
 import React from 'react';
 //import '../App.css'
 import { connect } from 'react-redux';
-import {Redirect} from 'react-router-dom'
+// import {Redirect} from 'react-router-dom'
 
-const Login = ({ dispatch }) => {
-    // const [wrongInfo, setWrongInfo] = React.useState(false);
-    // const [existingAccount, setExistingAccount] = React.useState(false)
-    
+const Login = () => {
+
+    window.onload = function () {
+        sessionStorage.removeItem('username')
+        sessionStorage.removeItem('room')
+    }
+
     const submitLoginForm = () => {
+
         sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
-        document.getElementsByTagName('form')[0].submit()
+        // document.getElementById('login').submit()
     }
 
     const submitSignupForm = () => {
         sessionStorage.setItem('username', document.getElementsByName('username')[1].value)
-        document.getElementsByTagName('form')[1].submit()
+        document.getElementById('signup').submit()
     }
 
+    const passwordCheck = () => {
+        if (document.getElementById('password').value !== document.getElementById('password_confirm').value) {
+            console.log('IF TEST')
+            document.getElementById('password_confirm').setCustomValidity('Passwords Do Not Match')
+        }
+        else {
+            console.log('YEEEEES')
+            document.getElementById('password_confirm').setCustomValidity('')
+        }
+    }
 
     return (
         <div>
-            <h1>Login</h1>
+            <h1><u>Login</u></h1>
             <form action="db/check" method="POST">
-                <div>Username:
-              <input name="username" type="text" required />
+                <div>
+                    <input name="username" type="text" className="inputs" placeholder="Username" required />
                 </div>
-                <div>Password:
-              <input name="password" type='password' required />
+                <div>
+                    <input name="password" type='password' className="inputs" placeholder="Password" required />
                 </div>
-                <button onClick = {submitLoginForm} >Login</button>
+                <button className="login" id="login" onClick={submitLoginForm}  ><span>Login</span></button>
             </form>
-            {/* <div>
-                {wrongInfo && (
-                    <div>
-                        Incorrect username/password
-                    </div>
-                )}
-            </div> */}
             <div>
 
-                <h2>Sign Up</h2>
-                <form action="db/insertAcc" method="POST">
-                    <div>Username:
-              <input name="username" type="text" required />
+                <h2><u>Sign Up</u></h2>
+                <form action="db/insertAcc" method="POST" id="signup">
+                    <div>
+                        <input name="username" type="text" className="inputs" placeholder="Username" required />
                     </div>
-                    <div>Password:
-              <input name="password" type='password' required />
+                    <div>
+                        <input name="password" type='password' className="inputs" id="password" placeholder="Password" onChange={passwordCheck} required />
                     </div>
-                    <button onClick = {submitSignupForm}>Sign Up</button>
+                    <div>
+                        <input name="password_confirm" type='password' className="inputs" id="password_confirm" placeholder="Confirm Password" onChange={passwordCheck} required />
+                    </div>
+                    <button className="signup" onClick={submitSignupForm}><span>Sign Up</span></button>
                 </form>
 
             </div>
-            {/* <div>
-                {existingAccount && (
-                    <div>
-                        Username already exists
-                    </div>
-                )}
-            </div> */}
-            {sessionStorage.getItem('username') && (
+            {/* {sessionStorage.getItem('username') && (
                 <Redirect to = "/Rooms"/>
-            )}
+            )} */}
         </div>
     );
 

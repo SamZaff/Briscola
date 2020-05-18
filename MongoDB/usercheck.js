@@ -101,6 +101,7 @@ client.connect((err) => {
             .catch((e) => {
               console.log(e)
               //res.send('Error');
+              
               res.redirect('../')
             })
         }

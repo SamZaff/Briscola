@@ -6,7 +6,6 @@ const port = 4000
 const io = require('socket.io')(http)
 var deckLogic = require('../deck').data
 var defaultDeck = deckLogic.getDeck()
-// deck = require('../deck').data.shuffle(deck)
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }))
@@ -111,7 +110,6 @@ const determineWinner = () => {
         highest = tempField[i]
       }
     }
-    // rooms[num].turn = rooms[num].users.indexOf(highest.username)
     rooms[num].turn = rooms[num].users.findIndex(function (item, i) {
       if (item.username === highest.username) {
         rooms[num].users[i].score += points
@@ -126,7 +124,6 @@ const determineWinner = () => {
         highest = tempField[i]
       }
     }
-    // rooms[num].turn = rooms[num].users.indexOf(highest.username)
     rooms[num].turn = rooms[num].users.findIndex(function (item, i) {
       if (item.username === highest.username) {
         rooms[num].users[i].score += points
@@ -158,9 +155,7 @@ const setGlobalCards = (newCard) => {
   if (rooms[num].cardField.length === rooms[num].users.length) {
     determineWinner()
   }
-  console.log('CARDS PLAYED: ' + rooms[num].playedCards)
   if (rooms[num].playedCards >= 40) {
-    console.log('PLAYED ALL CARDS')
     broadcastMessage({
       type: 'FINISH_GAME',
       roomName: rooms[num].name
@@ -179,12 +174,20 @@ const clearField = () => {
 
 const restartGame = () => {
   rooms[num].cardField = []
-  rooms[num].deck = deckLogic.shuffle(Object.assign([], defaultDeck))
-  rooms[num].trump = rooms[num].deck.pop()
   rooms[num].deck.unshift(rooms[num].trump)
   rooms[num].playedCards = 0
   rooms[num].turn = 0
-
+  if (rooms[num].users.length === 3) {
+    rooms[num].deck = Object.assign([], defaultDeck)
+    rooms[num].deck.splice(21, 1)
+    rooms[num].deck = deckLogic.shuffle(rooms[num].deck)
+    rooms[num].playedCards++
+  }
+  else {
+    rooms[num].deck = deckLogic.shuffle(Object.assign([], defaultDeck))
+  }
+  rooms[num].trump = rooms[num].deck.pop()
+  rooms[num].deck.unshift(rooms[num].trump)
   for (var i = 0; i < rooms[num].users.length; i++) {
     rooms[num].users[i].score = 0
   }
@@ -197,19 +200,12 @@ const restartGame = () => {
     roomName: rooms[num].name,
     cardField: []
   })
-  /*players: rooms[rooms.length - 1].users,
-      turn: rooms[rooms.length - 1].users[rooms[rooms.length - 1].turn],
-      type: 'UPDATE_PLAYER_LIST',
-      roomName: data.roomName,
-      cards: rooms[rooms.length - 1].deck,
-      trump */
+
 }
 
 io.on('connection', (socket) => {
   console.log('Someone has connected');
-  console.log(socket.id)
   //broadcastMessage('someone has connected!');
-
 
   socket.send(JSON.stringify({
     type: 'UPDATE_MESSAGES',
@@ -233,7 +229,6 @@ io.on('connection', (socket) => {
       playedCards: 0
     })
     socket.join(data.roomName)
-    //io.sockets.emit('sendRooms', rooms)
     sendRooms()
     const stuff = {
       players: rooms[rooms.length - 1].users,
@@ -243,14 +238,32 @@ io.on('connection', (socket) => {
       cards: rooms[rooms.length - 1].deck,
       trump
     }
-    //socket.in(data.roomName).emit('update', stuff)
     broadcastMessage(stuff)
   })
 
+  socket.on('joinRequest', (data) => {
+    const message = {
+      type: 'RECIEVE_REQUEST',
+      joining: {
+        id: socket.id,
+        username: data.username
+      }
 
+    }
+    io.to(Object.keys(io.sockets.adapter.rooms[data.roomName].sockets)[0]).emit('update', message)
+  })
+
+  socket.on('cancel', (data) => {
+    if (io.sockets.adapter.rooms[data]) {
+      io.to(Object.keys(io.sockets.adapter.rooms[data].sockets)[0]).emit('update', { type: 'CANCEL' })
+    }
+  })
+
+  socket.on('response', (data) => {
+    io.to(data.id).emit(data.response, data.room)
+  })
 
   socket.on('joinRoom', (data) => {
-
     var stuff;
     for (var i = 0; i < rooms.length; i++) {
       if (rooms[i].name === data.roomName) {
@@ -258,50 +271,51 @@ io.on('connection', (socket) => {
           username: data.username,
           score: 0
         })
+        rooms[i].cardField = []
+        rooms[i].playedCards = 0
+        if (rooms[i].users.length === 3) {
+          rooms[i].deck = Object.assign([], defaultDeck)
+          rooms[i].deck.splice(21, 1)
+          rooms[i].deck = deckLogic.shuffle(rooms[i].deck)
+          rooms[i].playedCards++
+        }
+        else {
+          rooms[i].deck = deckLogic.shuffle(Object.assign([], defaultDeck))
+        }
+        rooms[i].trump = rooms[i].deck.pop()
+        rooms[i].deck.unshift(rooms[i].trump)
+
+        rooms[i].turn = 0
+        for (var j = 0; j < rooms[i].users.length - 1; j++) {
+          rooms[i].users[j].score = 0
+        }
         stuff = {
           players: rooms[i].users,
-          turn: rooms[i].users[rooms[i].turn],
+          turn: rooms[i].users[0],
           type: 'UPDATE_PLAYER_LIST',
           roomName: data.roomName,
-          cards: rooms[rooms.length - 1].deck,
+          cards: rooms[i].deck,
+          cardField: [],
           trump: rooms[i].trump
         }
         socket.join(data.roomName)
-        // io.sockets.emit('sendRooms', rooms)
         sendRooms()
-        var firstProp;
-        var roomSockets = io.sockets.adapter.rooms[data.roomName].sockets
-        // for (var key in roomSockets) {
-        //   if (roomSockets.sockets.hasOwnProperty(key)) {
-        //     firstProp = roomSockets[key];
-        //     break;
-        //   }
-        // }
-        // console.log(firstProp)
+        break;
       }
     }
+
     broadcastMessage(stuff)
 
   })
 
   socket.on('getRooms', () => {
-    for (var i = 0; i < rooms.length; i) {
-      if (!io.sockets.adapter.rooms[rooms[i].name]) {
-        console.log('room successfully removed')
-        rooms.splice(i, 1)
-      }
-      else {
-        i++
-      }
-    }
-    socket.emit('sendRooms', rooms)
+    sendRooms()
   })
 
   socket.on('remove', (data) => {
     var stuff;
     var temp;
     var tempTurn;
-    console.log(data)
     if (data.room) {
       for (var i = 0; i < rooms.length; i++) {
         if (rooms[i].name === data.room) {
@@ -332,9 +346,7 @@ io.on('connection', (socket) => {
       }
 
       sendRooms()
-      console.log('AFTER SEND ROOMS TEST')
       socket.in(data.room).emit('update', stuff)
-      // io.sockets.emit('sendRooms', rooms)
 
     }
     else {

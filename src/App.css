@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 body {
@@ -7,9 +10,28 @@ body {
   /* background-color: whitesmoke; */
 }
 
+.outer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.outer2 {
+  /* position: absolute; */
+  width: 100%;
+  height: 100%;
+}
+
 .h2 {
   font-size: 2rem;
   
+}
+
+.centered {
+  text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .App-logo {
@@ -60,6 +82,91 @@ background-color: #282c34;
   background-color: #282c34;
 }
 
+.btns {
+  display: inline-block;
+  width: calc(50% - 4px);
+  margin: 0 auto;
+}
+
+.inputs {
+  width: 20%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  min-width: 300px;
+  font-size: medium;
+}
+
+ .login {
+  width: 20%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  background-color: #1a51c0;
+  color: white;
+  font-size: larger;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.signup {
+  width: 20%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  background-color: #12a84b;
+  color: white;
+  font-size: large;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+span {
+  display: inline-block;
+  position: relative;
+  transition: 0.4s;
+}
+
+span:after {
+  content: '\00bb';
+  font-size: large;
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -10px;
+  transition: 0.4s;
+}
+
+.login:hover span, .signup:hover span {
+  padding-right: 15px;
+
+}
+
+.login:hover span:after, .signup:hover span:after {
+  opacity: 1;
+  right: 0;
+
+}
+
+.signup:hover {
+  background-color: #0f9241;
+  transition: 0.2s;
+}
+
+.login:hover {
+  background-color: #13409b;
+  transition: 0.2s;
+}
+
 li {
   padding-left: 5px;
   padding-right: 5px;
@@ -87,17 +194,16 @@ ul {
 }
 
 
-.App #playerHand {
-  bottom: 20%;
-  left: 50%;
-  /* margin: 0 auto; */
-  position: fixed;
+.playerHand {
+  top: 60%;
+  /* height: 50px; */
+  position: absolute;
   animation-name: drawCard;
   animation-duration: .5;
 }
 
 .modal {
-  position: fixed;
+  position: static;
   z-index: 1;
   width: 100%;
   height: 100%;
@@ -141,5 +247,6 @@ ul {
 
 @keyframes drawCard {
   0%   {left:50%; top:50%px;}
-  100%   {background-color:red; left:50%; bottom: 20%;}
+  100%   {left:50%; bottom: 20%;}
 }
+

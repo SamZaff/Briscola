@@ -32,3 +32,8 @@ export const setTrumpSuit = trump => ({
     type: 'SET_TRUMP_SUIT',
     trump
 })
+
+export const toggleJoinRequest = joinRequest => ({
+    type: 'TOGGLE_JOIN_REQUEST',
+    joinRequest
+})

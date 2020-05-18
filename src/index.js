@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { updatePlayerList } from './redux/actions/userActions';
 import { updateNotes } from './redux/actions/notesActions';
-import { updateCards, updateTurn, updateCardField, toggleCheckOverallWinner, setTrumpSuit } from './redux/actions/cardsActions'
+import { updateCards, updateTurn, updateCardField, toggleCheckOverallWinner, setTrumpSuit, toggleJoinRequest, updateHand } from './redux/actions/cardsActions'
 import { applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'
 import socketIOClient from 'socket.io-client'
@@ -18,7 +18,6 @@ const socket = socketIOClient('http://localhost:4000')
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 socket.on('update', messageObject => {
-    console.log(messageObject.type)
     switch (messageObject.type) {
     case 'UPDATE_MESSAGES':
       store.dispatch(updateNotes(messageObject.notes))
@@ -41,6 +40,7 @@ socket.on('update', messageObject => {
       if (messageObject.cardField) {
         store.dispatch(updateCardField(messageObject.cardField))
         store.dispatch(toggleCheckOverallWinner(false))
+        store.dispatch(updateHand([]))
       }
       break;
     case 'FIELD_CLEAR':
@@ -51,8 +51,13 @@ socket.on('update', messageObject => {
       store.dispatch(updatePlayerList(messageObject.updatedScores))
       break;
     case 'FINISH_GAME':
-      console.log('GAME FINISHED')
       store.dispatch(toggleCheckOverallWinner(true))
+      break;
+    case 'RECIEVE_REQUEST':
+      store.dispatch(toggleJoinRequest([messageObject.joining]))
+      break;
+    case 'CANCEL':
+      store.dispatch(toggleJoinRequest([]))
       break;
     default:
   }
@@ -74,7 +79,6 @@ serviceWorker.unregister();
 
 
 function helper() {
-  console.log('socket-client test')
   return socket;
 }
 
