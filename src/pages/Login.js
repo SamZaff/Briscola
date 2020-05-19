@@ -1,33 +1,32 @@
 import React from 'react';
-//import '../App.css'
 import { connect } from 'react-redux';
-// import {Redirect} from 'react-router-dom'
+// import axios from 'axios'
 
 const Login = () => {
-
+    
     window.onload = function () {
         sessionStorage.removeItem('username')
         sessionStorage.removeItem('room')
     }
 
     const submitLoginForm = () => {
-
         sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
-        // document.getElementById('login').submit()
+        // axios.post('db/check', {})
     }
 
     const submitSignupForm = () => {
         sessionStorage.setItem('username', document.getElementsByName('username')[1].value)
-        document.getElementById('signup').submit()
+    }
+
+    const passwordValidate = () => {
+        document.getElementById('password').value.includes(' ') ? document.getElementById('password').setCustomValidity('Password can\'t contain Spaces') : document.getElementById('password').setCustomValidity('')
     }
 
     const passwordCheck = () => {
         if (document.getElementById('password').value !== document.getElementById('password_confirm').value) {
-            console.log('IF TEST')
             document.getElementById('password_confirm').setCustomValidity('Passwords Do Not Match')
         }
         else {
-            console.log('YEEEEES')
             document.getElementById('password_confirm').setCustomValidity('')
         }
     }
@@ -35,7 +34,7 @@ const Login = () => {
     return (
         <div>
             <h1><u>Login</u></h1>
-            <form action="db/check" method="POST">
+            <form action="db/check" method="POST" /*onSubmit = {e => e.preventDefault()}*/>
                 <div>
                     <input name="username" type="text" className="inputs" placeholder="Username" required />
                 </div>
@@ -52,7 +51,10 @@ const Login = () => {
                         <input name="username" type="text" className="inputs" placeholder="Username" required />
                     </div>
                     <div>
-                        <input name="password" type='password' className="inputs" id="password" placeholder="Password" onChange={passwordCheck} required />
+                        <input name="password" type='password' className="inputs" id="password" placeholder="Password" onChange={() => {
+                            passwordCheck()
+                            passwordValidate()
+                            }} required />
                     </div>
                     <div>
                         <input name="password_confirm" type='password' className="inputs" id="password_confirm" placeholder="Confirm Password" onChange={passwordCheck} required />

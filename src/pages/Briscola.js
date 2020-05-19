@@ -8,7 +8,6 @@ import '../App.css'
 
 
 const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOverallWinner, trump, joinRequest }) => {
-  const [text, setText] = React.useState('');
 
   window.onload = function () {
     sessionStorage.removeItem('room')
@@ -51,8 +50,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
   const requestResponse = (response) => {
     var data = {
       room: sessionStorage.getItem('room'),
-      username: joinRequest[0].username,
-      id: joinRequest[0].id,
+      joinRequest,
       response
     }
     helper.helper().emit('response', data)
@@ -70,7 +68,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     helper.helper().emit('message', data)
   };
 
-  const handleSubmit = () => {
+  const sendChatMessage = () => {
     // const data = {
     //   type: 'SEND_MESSAGE',
     //   newNote: text,
@@ -135,10 +133,10 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
   }
 
   return (
-    <div className = "outer2">
-      {!sessionStorage.getItem('username') && (
-        <Redirect to="/" />
-      )}
+    <div>
+        {!sessionStorage.getItem('username') && (
+          <Redirect to="/" />
+        )}
       <h1>Briscola</h1>
       <div>
         {players && (
@@ -157,7 +155,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       </div>
 
       <div>
-        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 /*&& players.length > 1*/ && (
+        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 && (
           <button onClick={() => handleDraw()}>Draw</button>
         )}
 
@@ -171,6 +169,22 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
         )}
       </div>
       <div>
+
+
+        <div >{hand.map((card, i) =>
+          <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" alt={card.name} onClick={() => {
+            if (turn.username === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
+              handleCardField({
+                username: sessionStorage.getItem('username'),
+                card: card
+              })
+              hand.splice(i, 1)
+            }
+          }
+          } />
+        )}</div>
+
+
       </div>
 
       <div>
@@ -197,8 +211,8 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
         Cards left in deck: {cards.length}
       </div>
 
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <button onClick={handleSubmit}>Submit</button>
+      {/* <input value={text} onChange={e => setText(e.target.value)} />
+      <button onClick={handleSubmit}>Submit</button> */}
 
       {joinRequest.length > 0 && (
         <div>
@@ -218,18 +232,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
           </div>
         </div>
       )}
-      <div className="fade">{hand.map((card, i) =>
-        <img  src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" alt={card.name} onClick={() => {
-          if (turn.username === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
-            handleCardField({
-              username: sessionStorage.getItem('username'),
-              card: card
-            })
-            hand.splice(i, 1)
-          }
-        }
-        } />
-      )}</div>
+
       {!sessionStorage.getItem('username') && (
         <Redirect to="/" />
       )}

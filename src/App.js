@@ -7,17 +7,8 @@ import Rooms from './pages/Rooms';
 import { connect } from 'react-redux';
 import { Navbar, Nav } from 'react-bootstrap'
 import helper from './index'
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
-  window.onerror = function () {
-    return (
-      <div>
-        AN ERROR OCCURED
-      </div>
-    )
-  }
-
   return (
     <div className="App">
 

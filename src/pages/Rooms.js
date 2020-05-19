@@ -22,7 +22,7 @@ const Rooms = () => {
 
     }
 
-    window.onbeforeunload = function() {
+    window.onbeforeunload = function () {
         if (!rejected && modal) {
             helper.helper().emit('cancel', chosenRoom)
         }
@@ -85,37 +85,53 @@ const Rooms = () => {
                 )}
                 <h2 className="h2">Welcome, {sessionStorage.getItem('username')}</h2>
             </div>
-            <h4>Rooms:</h4>
-            {!modal && (
-                <div>
+            <h4>Join a Room:</h4>
+
+            <div>
+                <table className="roomsTable">
+                    <tr>
+                        <th>Name</th>
+                        <th># of Players</th>
+                        <th>Status</th>
+                    </tr>
                     {rooms.map((room, i) => (
-                        <div key={i}>
-                            {room.users.length > 0 && (
-                                <div>
-                                    <div>{room.name}</div>
-                                    <div>{room.users.length}/4</div>
-                                    {room.users.length < 4 && !room.users.some(item => item.username === sessionStorage.getItem('username')) && (
+                        <tr key={i}>
+                            <td>{room.name}</td>
+                            <td>{room.users.length}/4</td>
 
-                                        <button onClick={() => joinRoom(room)}>Join</button>
+                            {room.users.length < 4 && room.users.length > 0 && !room.users.some(item => item.username === sessionStorage.getItem('username')) && (
 
-                                    )}
-                                    {room.users.some(item => item.username === sessionStorage.getItem('username')) && (
-                                        <div> <b> ALREADY JOINED</b> </div>
-                                    )}
-                                    {room.users.length >= 4 && (
-                                        <div> <b>FULL</b> </div>
-                                    )}
-                                </div>
+                                <td className="joinable" onClick={() => !modal && joinRoom(room)}><b>Join Now! (Click here)</b></td>
+
+                            )}
+                            {room.users.some(item => item.username === sessionStorage.getItem('username')) && (
+                                <td className="unjoinable"><b>Already Joined</b></td>
+                            )}
+                            {room.users.length >= 4 && !room.users.some(item => item.username === sessionStorage.getItem('username')) && (
+                                <td className="unjoinable"><b>Full</b></td>
+                            )}
+                            {room.users.length <= 0 && (
+                                <td className="unjoinable"><b>Unavailable</b></td>
                             )}
 
-                        </div>
+
+                        </tr>
                     ))}
-                    <form>
-                        <input type="text" value={newRoom} onChange={e => setNewRoom(e.target.value)} required />
-                        <button onClick={submitRoom}>New Room</button>
-                    </form>
-                </div>
-            )}
+
+                </table>
+                {rooms.length < 1 && (
+                    <div className="empty">
+                        No rooms currently available...
+                    </div>
+                )}
+                <h4>Create a Room:</h4>
+                <form>
+                    <input className="inputs" type="text" value={newRoom} onChange={e => setNewRoom(e.target.value)} required />
+                    <div >
+                        <button className="new" onClick={submitRoom}>New Room</button>
+                    </div>
+                </form>
+            </div>
             {modal && (
                 <div>
 

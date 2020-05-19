@@ -216,7 +216,7 @@ io.on('connection', (socket) => {
     var temp = deckLogic.shuffle(Object.assign([], defaultDeck))
     var trump = temp.pop()
     temp.unshift(trump)
-    rooms.push({
+    rooms.unshift({
       name: data.roomName,
       users: [{
         username: data.username,
@@ -260,7 +260,19 @@ io.on('connection', (socket) => {
   })
 
   socket.on('response', (data) => {
-    io.to(data.id).emit(data.response, data.room)
+    var roomSize = Object.keys(io.sockets.adapter.rooms[data.room].sockets).length
+    console.log(roomSize)
+    console.log(io.sockets.adapter.rooms[data.room].sockets)
+    for (var i = 0; i < data.joinRequest.length; i++) {
+      if (roomSize < 4) {
+        io.to(data.joinRequest[i].id).emit(data.response, data.room)
+        roomSize++
+      }
+      else {
+        io.to(data.joinRequest[i].id).emit('decline', data.room)
+      }
+    }
+
   })
 
   socket.on('joinRoom', (data) => {

@@ -46,9 +46,17 @@ const cardsReducer = (state = DEFAULT_STATE, action) => {
         trump: action.trump
       }
     case 'TOGGLE_JOIN_REQUEST':
-      return {
-        ...state,
-        joinRequest: action.joinRequest
+      if (action.joinRequest.length === 0) {
+        return {
+          ...state,
+          joinRequest: action.joinRequest
+        }
+      }
+      else {
+        return {
+          ...state,
+          joinRequest: [...state.joinRequest, action.joinRequest[0]]
+        }
       }
     default:
       return state;
