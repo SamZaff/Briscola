@@ -34,7 +34,7 @@ const Login = () => {
     return (
         <div>
             <h1><u>Login</u></h1>
-            <form action="db/check" method="POST" /*onSubmit = {e => e.preventDefault()}*/>
+            <form action="/check" method="POST" /*onSubmit = {e => e.preventDefault()}*/>
                 <div>
                     <input name="username" type="text" className="inputs" placeholder="Username" required />
                 </div>
@@ -46,7 +46,7 @@ const Login = () => {
             <div>
 
                 <h2><u>Sign Up</u></h2>
-                <form action="db/insertAcc" method="POST" id="signup">
+                <form action="/insertAcc" method="POST" id="signup">
                     <div>
                         <input name="username" type="text" className="inputs" placeholder="Username" required />
                     </div>

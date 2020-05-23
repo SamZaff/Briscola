@@ -61,11 +61,10 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     hand.push(cards.pop())
     dispatch(updateHand(hand))
     const data = {
-      type: 'DRAW_CARD',
       room: sessionStorage.getItem('room')
     };
     // client to server
-    helper.helper().emit('message', data)
+    helper.helper().emit('drawCard', data)
   };
 
   const sendChatMessage = () => {
@@ -83,30 +82,27 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 
   const handleCardField = (card) => {
     const data = {
-      type: 'SEND_CARD',
       newCard: card,
       room: sessionStorage.getItem('room')
     };
     // client to server
-    helper.helper().emit('message', data)
+    helper.helper().emit('sendCard', data)
 
   };
 
   const clearField = () => {
     const data = {
-      type: 'CLEAR_FIELD',
       room: sessionStorage.getItem('room')
     };
     //client to server
-    helper.helper().emit('message', data)
+    helper.helper().emit('clearField', data)
   }
 
   const restartGame = () => {
     const data = {
-      type: 'RESTART_GAME',
       room: sessionStorage.getItem('room')
     }
-    helper.helper().emit('message', data)
+    helper.helper().emit('restartGame', data)
   }
 
   const getHighestScore = () => {

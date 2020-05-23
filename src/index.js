@@ -14,10 +14,11 @@ import { applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'
 import socketIOClient from 'socket.io-client'
 
-const socket = socketIOClient('http://localhost:4000')
+const socket = socketIOClient()
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 socket.on('update', messageObject => {
+    console.log(messageObject.type)
     switch (messageObject.type) {
     case 'UPDATE_MESSAGES':
       store.dispatch(updateNotes(messageObject.notes))

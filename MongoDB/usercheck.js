@@ -1,12 +1,11 @@
 const md5 = require('md5')
 const express = require('express');
-const app = express();
-app.use(express.json());
-const bodyParser = require('body-parser')
-app.use(bodyParser.json())
-app.use(express.urlencoded({ extended: true}))
-const { MongoClient, ObjectID } = require('mongodb');
-
+const app = express.Router();
+// app.use(express.json());
+// const bodyParser = require('body-parser')
+// app.use(bodyParser.json())
+// app.use(express.urlencoded({ extended: true}))
+const { MongoClient } = require('mongodb');
 
 //Connection URL
 const url = 'mongodb://localhost:27017';
@@ -16,22 +15,8 @@ const dbName = 'CardGame'
 
 const client = new MongoClient(url);
 
-const port = 3002;
-var http = require('http').Server(app);
-
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "YOUR-DOMAIN.TLD"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
-// app.get('/', function(req, res, next) {
-//   // Handle the get for this route
-// });
-
-// app.post('/', function(req, res, next) {
-//  // Handle the post for this route
-// });
+// const port = 3002;
+// var http = require('http').Server(app);
 
 client.connect((err) => {
   if (err) {
@@ -46,8 +31,6 @@ client.connect((err) => {
 
     let valid = false
     let usernames = []
-    //console.log('count', counter);
-    //console.log(req.body);
     // this should be a mongo find
     db.collection('Users')
       .find({ username: req.body.username, password: md5(req.body.password) }, { $exists: true })
@@ -96,11 +79,9 @@ client.connect((err) => {
             .then(() => {
               valid = true
               res.redirect('../Rooms')
-              //res.send('Insert Ok')
             })
             .catch((e) => {
               console.log(e)
-              //res.send('Error');
               
               res.redirect('../')
             })
@@ -110,8 +91,9 @@ client.connect((err) => {
         }
       })
 
-
   });
 
-  http.listen(port, () => console.log(`Listening on port ${port}!`))
+  // http.listen(port, () => console.log(`Listening on port ${port}!`))
 })
+
+module.exports = app
