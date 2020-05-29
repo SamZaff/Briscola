@@ -2,7 +2,6 @@ var deckLogic = require('../deck').data
 var defaultDeck = deckLogic.getDeck()
 
 var rooms = []
-const notes = [];
 
 const determineWinner = (io, num) => {
   var points = 0
@@ -99,12 +98,14 @@ module.exports.cancel = (io, data) => {
 }
 
 module.exports.joinRoom = (socket, io, data) => {
+
   var stuff;
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.roomName) {
       rooms[i].users.push({
         username: data.username,
-        score: 0
+        score: 0,
+        handLength: 0,
       })
       rooms[i].cardField = []
       rooms[i].playedCards = 0
@@ -123,6 +124,7 @@ module.exports.joinRoom = (socket, io, data) => {
       rooms[i].turn = 0
       for (var j = 0; j < rooms[i].users.length - 1; j++) {
         rooms[i].users[j].score = 0
+        rooms[i].users[j].handLength = 0
       }
       stuff = {
         players: rooms[i].users,
@@ -150,7 +152,8 @@ module.exports.submitRoom = (socket, io, data) => {
     name: data.roomName,
     users: [{
       username: data.username,
-      score: 0
+      score: 0,
+      handLength: 0,
     }],
     trump: trump,
     turn: 0,
@@ -161,11 +164,11 @@ module.exports.submitRoom = (socket, io, data) => {
   socket.join(data.roomName)
   module.exports.sendRooms(io)
   const stuff = {
-    players: rooms[rooms.length - 1].users,
-    turn: rooms[rooms.length - 1].users[rooms[rooms.length - 1].turn],
+    players: rooms[0].users,
+    turn: rooms[0].users[rooms[0].turn],
     type: 'UPDATE_PLAYER_LIST',
     roomName: data.roomName,
-    cards: rooms[rooms.length - 1].deck,
+    cards: rooms[0].deck,
     trump
   }
   io.in(stuff.roomName).emit('update', stuff)
@@ -229,10 +232,12 @@ module.exports.response = (io, data) => {
   var roomSize = Object.keys(io.sockets.adapter.rooms[data.room].sockets).length
   console.log(roomSize)
   console.log(io.sockets.adapter.rooms[data.room].sockets)
+  var requestNames = []
   for (var i = 0; i < data.joinRequest.length; i++) {
-    if (roomSize < 4) {
+    if (roomSize < 4 && !requestNames.includes(data.joinRequest[i].username)) {
       io.to(data.joinRequest[i].id).emit(data.response, data.room)
       roomSize++
+      requestNames.push(data.joinRequest[i].username)
     }
     else {
       io.to(data.joinRequest[i].id).emit('decline', data.room)
@@ -250,13 +255,20 @@ module.exports.drawCard = (io, data) => {
       break;
     }
   }
+  for (var j = 0; j < rooms[num].users.length; j++) {
+    if (rooms[num].users[j].username === data.username) {
+      rooms[num].users[j].handLength++
+      break
+    }
+  }
   rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
   rooms[num].deck.pop()
   let stuff = {
     type: 'SET_REMAINING_CARDS',
     remainingCards: rooms[num].deck,
     currentTurn: rooms[num].users[rooms[num].turn],
-    roomName: rooms[num].name
+    roomName: rooms[num].name,
+    players: rooms[num].users
   }
   io.in(data.room).emit('update', stuff)
 
@@ -271,6 +283,12 @@ module.exports.sendCard = (io, data) => {
       break;
     }
   }
+  for (var j = 0; j < rooms[num].users.length; j++) {
+    if (rooms[num].users[j].username === data.username) {
+      rooms[num].users[j].handLength--
+      break
+    }
+  }
   rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
   rooms[num].cardField.push(data.newCard)
   rooms[num].playedCards++
@@ -278,7 +296,8 @@ module.exports.sendCard = (io, data) => {
     type: 'SET_GLOBAL_CARD',
     cardField: rooms[num].cardField,
     currentTurn: rooms[num].users[rooms[num].turn],
-    roomName: rooms[num].name
+    roomName: rooms[num].name,
+    players: rooms[num].users
   })
   if (rooms[num].cardField.length === rooms[num].users.length) {
     determineWinner(io, num)
@@ -334,6 +353,7 @@ module.exports.restartGame = (io, data) => {
   rooms[num].deck.unshift(rooms[num].trump)
   for (var i = 0; i < rooms[num].users.length; i++) {
     rooms[num].users[i].score = 0
+    rooms[num].users[i].handLength = 0
   }
   io.in(rooms[num].name).emit('update', {
     type: 'UPDATE_PLAYER_LIST',

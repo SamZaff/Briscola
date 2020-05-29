@@ -27,11 +27,13 @@ socket.on('update', messageObject => {
     case 'SET_GLOBAL_CARD':
       store.dispatch(updateCardField(messageObject.cardField))
       store.dispatch(updateTurn(messageObject.currentTurn))
-      //store.dispatch(updateCards(messageObject.remainingCards))
+      store.dispatch(updatePlayerList(messageObject.players))
+
       break;
     case 'SET_REMAINING_CARDS':
       store.dispatch(updateCards(messageObject.remainingCards))
       store.dispatch(updateTurn(messageObject.currentTurn))
+      store.dispatch(updatePlayerList(messageObject.players))
       break;
     case 'UPDATE_PLAYER_LIST':
       store.dispatch(updatePlayerList(messageObject.players))

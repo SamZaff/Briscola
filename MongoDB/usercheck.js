@@ -1,10 +1,6 @@
 const md5 = require('md5')
 const express = require('express');
 const app = express.Router();
-// app.use(express.json());
-// const bodyParser = require('body-parser')
-// app.use(bodyParser.json())
-// app.use(express.urlencoded({ extended: true}))
 const { MongoClient } = require('mongodb');
 
 //Connection URL
@@ -14,9 +10,6 @@ const url = 'mongodb://localhost:27017';
 const dbName = 'CardGame'
 
 const client = new MongoClient(url);
-
-// const port = 3002;
-// var http = require('http').Server(app);
 
 client.connect((err) => {
   if (err) {
@@ -93,7 +86,6 @@ client.connect((err) => {
 
   });
 
-  // http.listen(port, () => console.log(`Listening on port ${port}!`))
 })
 
 module.exports = app

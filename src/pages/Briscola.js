@@ -38,8 +38,10 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     var temp = [];
 
     for (var i = 0; i < joinRequest.length; i++) {
-      console.log(joinRequest[i])
-      temp.push(joinRequest[i].username)
+      if (!temp.includes(joinRequest[i].username)) {
+        console.log(joinRequest[i])
+        temp.push(joinRequest[i].username)
+      }
     }
     console.log(joinRequest.length)
     return temp.join(' & ')
@@ -61,9 +63,11 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     hand.push(cards.pop())
     dispatch(updateHand(hand))
     const data = {
-      room: sessionStorage.getItem('room')
+      room: sessionStorage.getItem('room'),
+      username: sessionStorage.getItem('username')
     };
     // client to server
+    turn = ''
     helper.helper().emit('drawCard', data)
   };
 
@@ -83,8 +87,10 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
   const handleCardField = (card) => {
     const data = {
       newCard: card,
-      room: sessionStorage.getItem('room')
+      room: sessionStorage.getItem('room'),
+      username: sessionStorage.getItem('username')
     };
+    turn = ''
     // client to server
     helper.helper().emit('sendCard', data)
 
@@ -128,13 +134,20 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     }
   }
 
+  const getStats = () => {
+    console.log(cards.length > 0)
+    console.log(turn.username)
+    console.log(turn.username === sessionStorage.getItem('username'))
+    console.log(hand.length < 3)
+    console.log(cardField.length === 0)
+  }
+
   return (
     <div>
-        {!sessionStorage.getItem('username') && (
-          <Redirect to="/" />
-        )}
-      <h1>Briscola</h1>
-      <div>
+      {!sessionStorage.getItem('username') && (
+        <Redirect to="/" />
+      )}
+      <div style={{ top: '75%', position: 'fixed', margin: '0 auto', width: '100%' }}>
         {players && (
           <div>
             Current Players:
@@ -145,17 +158,27 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
               <h3> <b>Waiting for players...</b></h3>
             )}
             <div>Trump suit: {trump.suit} ({trump.name})</div>
+            <div>Cards left in deck: {cards.length}</div>
+
+            {(cardField.length === players.length && cardField.length !== 0) && (
+              <div>
+                <button onClick={() => {
+                  clearField()
+                }}>Clear</button>
+              </div>
+            )}
           </div>
         )}
 
       </div>
 
       <div>
-        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 && (
-          <button onClick={() => handleDraw()}>Draw</button>
-        )}
+        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 /*&& players.length > 1*/ ?
+          <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='turn' alt='DECK' onClick={() => handleDraw()} />
+          : <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='notTurn' alt='DECK' onClick={() => getStats()} />}
 
       </div>
+
       <div>
         {checkOverallWinner && (
           <div>
@@ -164,51 +187,64 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
           </div>
         )}
       </div>
+
       <div>
-
-
-        <div >{hand.map((card, i) =>
-          <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" alt={card.name} onClick={() => {
-            if (turn.username === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
-              handleCardField({
-                username: sessionStorage.getItem('username'),
-                card: card
-              })
-              hand.splice(i, 1)
-            }
-          }
-          } />
-        )}</div>
-
-
+        {players.map((player, j) =>
+          <div>
+            {player.username === sessionStorage.getItem('username') ? <div >{hand.map((card, i) =>
+              <img style={{
+                marginLeft: j < 2 ? (i) * 90 : -(i) * 90,
+                // marginLeft: `calc(${hand.length*50}px - ${(i + 1) * 100}px)`,
+                animationName: 'drawCard' + (i + 1).toString(),
+                filter: turn.username === sessionStorage.getItem('username') ? '' : 'brightness(70%)'
+              }} className={`cardFace player${j + 1}`} id="playerHand" src={require('../ItalianCards/' + card.name + '.jpg')} alt={card.name} onClick={() => {
+                if (turn.username === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
+                  handleCardField({
+                    username: sessionStorage.getItem('username'),
+                    card: card
+                  })
+                  hand.splice(i, 1)
+                }
+              }
+              } />
+            )}
+            <div><b>{player.username}</b></div>
+            </div>
+            
+            : <div >
+              {/* <div> {(player.handLength).map((item, k) => */}
+              <div> {[...Array(player.handLength)].map((item, k) =>
+              <img className = {`player${j+1}`} src = {require('../ItalianCards/CardBacking1.png')}
+              style = {{marginLeft: j < 2 ? (k) * 90 : -(k) * 90,
+                 height: '155px', 
+                 width: '89px', 
+                 filter: turn.username === player.username ? '' : 'brightness(70%)'}} />
+              )}
+              
+             </div>
+             <div><b>{player.username}</b></div>
+             </div>}
+             
+          </div>
+        )}
       </div>
+
+
+
 
       <div>
         {cardField && (
           <div>
-            {cardField.map((card, i) => <img src={require('../ItalianCards/' + card.card.name + '.jpg')} width="200" height="414" alt={card.name} />)}
+            {cardField.map((card, i) => <img style={{ marginLeft: (cardField.length * 45) - ((i + 1) * 90) }} src={require('../ItalianCards/' + card.card.name + '.jpg')} className="cardFace" id="cardField" alt={card.name} />)}
           </div>
         )}
 
-      </div>
-
-      <div>
-        {(cardField.length === players.length && cardField.length !== 0) && (
-          <div>
-            <button onClick={() => {
-              clearField()
-            }}>Clear</button>
-          </div>
-        )}
       </div>
 
       <div>
         {/* {cards.map((card, i) => <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" />)} */}
-        Cards left in deck: {cards.length}
-      </div>
 
-      {/* <input value={text} onChange={e => setText(e.target.value)} />
-      <button onClick={handleSubmit}>Submit</button> */}
+      </div>
 
       {joinRequest.length > 0 && (
         <div>

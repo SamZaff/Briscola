@@ -150,7 +150,21 @@ const Rooms = () => {
                                 </span>
                             <p>Waiting for host to accept invite...</p>
                             {!rejected ? <ReactLoading type='bars' className="centered" />
-                                : <b>You were denied access</b>}
+                                : <div>
+                                    <h3>You were denied access</h3>
+                                    <div>
+                                    <div style = {{paddingTop: '15px', marginBottom: '15px'}}>
+                                    <u >Possible Reasons:</u>
+                                    </div>
+                                    <ul>
+                                        <li>The host declined your request</li>
+                                        <li>The room is full</li>
+                                        <li>The host left the room</li>
+                                        <li>You joined on another tab</li>
+                                    </ul>
+                                    </div>
+                                    </div>}
+                                
 
                         </div>
                     </div>

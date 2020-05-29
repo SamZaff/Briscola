@@ -10,18 +10,6 @@ body {
   /* background-color: whitesmoke; */
 }
 
-.outer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.outer2 {
-  /* position: absolute; */
-  width: 100%;
-  height: 100%;
-}
-
 .h2 {
   font-size: 2rem;
   
@@ -34,29 +22,14 @@ body {
   margin-right: auto;
 }
 
-.App-logo {
-  height: 40vmin;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
 .nav-bar{
   position: relative;
-display: flex;
-flex-wrap: wrap;
-align-items: center;
-justify-content: space-between;
-padding: .5rem 1rem;
-background-color: #282c34;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: .5rem 1rem;
+  background-color: #282c34;
 }
 
 .nav-bar-content{
@@ -76,10 +49,6 @@ background-color: #282c34;
   color: white;
   font-weight: bold;
 
-}
-
-.color-nav {
-  background-color: #282c34;
 }
 
 .btns {
@@ -172,38 +141,82 @@ span:after {
 }
 
 li {
-  padding-left: 5px;
-  padding-right: 5px;
-  display: inline;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 2px;
+  text-align: left;
+  margin-left: 20%;
 }
 
 ul {
-  list-style-type: none;
-  /* margin: 0; */
-  padding-top: 5px;
-  padding-bottom: 5px;
   overflow: hidden;
-  background-color: #333;
-  display: inline;
+  display: block;
+  
 }
 
-.rightli {
-  padding-left: 5px;
-  padding-right: 5px;
-  float: right;
+.cardFace {
+  border: 2px solid black;
+  border-radius: 8px;
+  padding: 5px;
+  background-color: rgb(170, 169, 169);
+  width: 75px;
+  height: 155px;
 }
 
-.input{
-  text-align: center;
+#playerHand {
+  cursor: pointer;
 }
 
+.player1 {
+  bottom: 3%;
+  left: 4%;
+  position: fixed;
+  animation-duration: .3s;
+}
 
-.playerHand {
-  top: 60%;
-  /* height: 50px; */
-  position: absolute;
-  animation-name: drawCard;
-  animation-duration: .5;
+.player2 {
+  bottom: 65%;
+  left: 4%;
+  position: fixed;
+  animation-duration: .3s;
+}
+.player3 {
+  bottom: 65%;
+  left: 90%;
+  position: fixed;
+  animation-duration: .3s;
+}
+.player4 {
+  bottom: 3%;
+  left: 90%;
+  position: fixed;
+  animation-duration: .3s;
+}
+
+#cardField {
+  bottom: 45%;
+  position: fixed;
+  left: 50%;
+}
+
+.deck{
+  left: calc(50% - 45px);
+  top: calc(20% - 90px);
+  position: fixed;
+  /* width: 100px; */
+  /* height: 179px;
+  width: 75px */
+  width: 89px;
+  height: 155px;
+}
+
+#turn:hover {
+  cursor: pointer;
+  filter: brightness(80%)
+}
+
+#notTurn {
+  filter: brightness(50%);
 }
 
 .modal {
@@ -287,18 +300,17 @@ tr:nth-child(even){background-color: #d8dde7;}
   flex: 1;
 }
 
-.nav-content {
-  color: green;
-  
+@keyframes drawCard1 {
+  0%   {position: absolute; left:calc(50%); bottom:calc(80% - 90px); filter: brightness(100%);}
+  100%   {position: absolute; filter: brightness(100%);}
 }
 
-.nav_content:hover {
-  color: grey;
-  /* cursor: pointer; */
+@keyframes drawCard2 {
+  0%   {position: absolute; left:calc(50% + 45px); bottom:calc(80% - 90px); filter: brightness(100%);}
+  100%   {position: absolute; filter: brightness(100%);}
 }
 
-@keyframes drawCard {
-  0%   {left:50%; top:50%px;}
-  100%   {left:50%; bottom: 20%;}
+@keyframes drawCard3 {
+  0%   {position: absolute; left:calc(50% + 89px); bottom:calc(80% - 90px); filter: brightness(100%);}
+  100%   {position: absolute; filter: brightness(100%);}
 }
-
