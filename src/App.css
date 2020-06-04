@@ -7,7 +7,6 @@
 
 body {
   background-color: #f8f8ff;
-  /* background-color: whitesmoke; */
 }
 
 .h2 {
@@ -160,39 +159,40 @@ ul {
   padding: 5px;
   background-color: rgb(170, 169, 169);
   width: 75px;
-  height: 155px;
+  height: 143px;
+  /* touch-action: manipulation; */
 }
 
 #playerHand {
   cursor: pointer;
 }
 
+
+
 .player1 {
-  bottom: 3%;
-  left: 4%;
+  bottom: 68%;
+  left: 2%;
   position: fixed;
   animation-duration: .3s;
 }
-
 .player2 {
-  bottom: 65%;
-  left: 4%;
+  bottom: 68%;
+  left: 92%;
   position: fixed;
   animation-duration: .3s;
 }
 .player3 {
-  bottom: 65%;
-  left: 90%;
+  bottom: 3%;
+  left: 92%;
   position: fixed;
   animation-duration: .3s;
 }
 .player4 {
   bottom: 3%;
-  left: 90%;
+  left: 2%;
   position: fixed;
   animation-duration: .3s;
 }
-
 #cardField {
   bottom: 45%;
   position: fixed;
@@ -203,11 +203,13 @@ ul {
   left: calc(50% - 45px);
   top: calc(20% - 90px);
   position: fixed;
-  /* width: 100px; */
-  /* height: 179px;
-  width: 75px */
   width: 89px;
   height: 155px;
+}
+
+.winScreen {
+  position: absolute;
+  top: 70%
 }
 
 #turn:hover {
@@ -301,16 +303,16 @@ tr:nth-child(even){background-color: #d8dde7;}
 }
 
 @keyframes drawCard1 {
-  0%   {position: absolute; left:calc(50%); bottom:calc(80% - 90px); filter: brightness(100%);}
-  100%   {position: absolute; filter: brightness(100%);}
+  0%   {left:calc(50% - 45px); bottom:calc(80% - 90px); filter: brightness(100%);}
+  100%   {filter: brightness(100%);}
 }
 
 @keyframes drawCard2 {
-  0%   {position: absolute; left:calc(50% + 45px); bottom:calc(80% - 90px); filter: brightness(100%);}
-  100%   {position: absolute; filter: brightness(100%);}
+  0%   {margin-left: 0; left:calc(50% - 45px); bottom:calc(80% - 90px); filter: brightness(100%);}
+  100%   {filter: brightness(100%);}
 }
 
 @keyframes drawCard3 {
-  0%   {position: absolute; left:calc(50% + 89px); bottom:calc(80% - 90px); filter: brightness(100%);}
-  100%   {position: absolute; filter: brightness(100%);}
+  0%   {margin-left: 0; left:calc(50% - 45px); bottom:calc(80% - 90px); filter: brightness(100%);}
+  100%   {filter: brightness(100%);}
 }

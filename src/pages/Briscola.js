@@ -179,7 +179,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 
       </div>
 
-      <div>
+      <div className = 'winScreen'>
         {checkOverallWinner && (
           <div>
             <h2>{getHighestScore()} Wins!</h2>
@@ -193,8 +193,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
           <div>
             {player.username === sessionStorage.getItem('username') ? <div >{hand.map((card, i) =>
               <img style={{
-                marginLeft: j < 2 ? (i) * 90 : -(i) * 90,
-                // marginLeft: `calc(${hand.length*50}px - ${(i + 1) * 100}px)`,
+                marginLeft: (j === 0 || j === 3) ? (i) * 90 : -(i) * 90,
                 animationName: 'drawCard' + (i + 1).toString(),
                 filter: turn.username === sessionStorage.getItem('username') ? '' : 'brightness(70%)'
               }} className={`cardFace player${j + 1}`} id="playerHand" src={require('../ItalianCards/' + card.name + '.jpg')} alt={card.name} onClick={() => {
@@ -212,10 +211,9 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
             </div>
             
             : <div >
-              {/* <div> {(player.handLength).map((item, k) => */}
               <div> {[...Array(player.handLength)].map((item, k) =>
               <img className = {`player${j+1}`} src = {require('../ItalianCards/CardBacking1.png')}
-              style = {{marginLeft: j < 2 ? (k) * 90 : -(k) * 90,
+              style = {{marginLeft: (j === 0 || j === 3) ? (k) * 90 : -(k) * 90,
                  height: '155px', 
                  width: '89px', 
                  filter: turn.username === player.username ? '' : 'brightness(70%)'}} />

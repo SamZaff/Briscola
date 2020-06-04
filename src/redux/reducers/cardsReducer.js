@@ -16,9 +16,18 @@ const cardsReducer = (state = DEFAULT_STATE, action) => {
         cards: action.cards,
       }
     case 'UPDATE_CURRENT_CARD':
-      return {
-        ...state,
-        cardField: action.cardField,
+      if (action.cardField.length === 0) {
+        return {
+          ...state,
+          cardField: action.cardField
+        }
+      }
+      else {
+        return {
+          ...state,
+          cardField: [action.cardField, ...state.cardField],
+          // joinRequest: [...state.joinRequest, action.joinRequest[0]]
+        }
       }
     case 'UPDATE_HAND':
       return {

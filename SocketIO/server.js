@@ -294,7 +294,7 @@ module.exports.sendCard = (io, data) => {
   rooms[num].playedCards++
   io.in(rooms[num].name).emit('update', {
     type: 'SET_GLOBAL_CARD',
-    cardField: rooms[num].cardField,
+    cardField: data.newCard,
     currentTurn: rooms[num].users[rooms[num].turn],
     roomName: rooms[num].name,
     players: rooms[num].users
