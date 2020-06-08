@@ -7,6 +7,7 @@
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.4.1",
+    "concurrently": "^5.2.0",
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.0",
     "http-proxy": "^1.18.0",
@@ -31,13 +32,16 @@
     "ws": "^7.2.0"
   },
   "scripts": {
-    "client-install": "npm install --prefix src",
-    "start": "node server.js",
-    "server": "node server.js",
-    "client": "npm start --prefix src",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "react-scripts start",
+    "server": "node app.js",
+    "client": "npm start",
+    "build": "react-scripts build",
+    "client-install": "npm install",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix src && npm run build --prefix src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+
   },
   "engines": {
     "node": "10.15.3"
