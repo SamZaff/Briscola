@@ -19,6 +19,9 @@ app.use((req, res, next) => {
 if (process.env.NODE_ENV === "production") {
     console.log('DIRECTORY: ' + path.resolve( __dirname))
 }
+else {
+    console.log('failed.......')
+}
 
 app.use(express.static('./public'));
 app.get('/', (req, res) => res.send('Hello From Express!'))
