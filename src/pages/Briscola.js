@@ -147,19 +147,20 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       {!sessionStorage.getItem('username') && (
         <Redirect to="/" />
       )}
-      <div style={{ top: '75%', position: 'fixed', margin: '0 auto', width: '100%' }}>
+
+      <div style = {{left: 'calc(40%)', width: '20%',
+  top: 'calc(5%)', position: 'fixed', textAlign: 'center'}}>
+        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 /*&& players.length > 1*/ ?
+          <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='turn' alt='DECK' onClick={() => handleDraw()} />
+          : <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='notTurn' alt='DECK' onClick={() => getStats()} />}
+        
         {players && (
-          <div>
-            Current Players:
-            {players.map((player, i) =>
-              <div>{player.username}'s score:{player.score}</div>
-            )}
+          <div style = {{marginTop: '-30px'}}>
             {players.length === 1 && (
               <h3> <b>Waiting for players...</b></h3>
             )}
             <div>Trump suit: {trump.suit} ({trump.name})</div>
             <div>Cards left in deck: {cards.length}</div>
-
             {(cardField.length === players.length && cardField.length !== 0) && (
               <div>
                 <button onClick={() => {
@@ -169,25 +170,36 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
             )}
           </div>
         )}
-
-      </div>
-
-      <div>
-        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 /*&& players.length > 1*/ ?
-          <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='turn' alt='DECK' onClick={() => handleDraw()} />
-          : <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='notTurn' alt='DECK' onClick={() => getStats()} />}
-
       </div>
 
       <div className = 'winScreen'>
         {checkOverallWinner && (
           <div>
             <h2>{getHighestScore()} Wins!</h2>
-            <button onClick={() => restartGame()}>Play Again</button>
+            <button style = {{fontSize: 'large'}} onClick={() => restartGame()}>Play Again</button>
           </div>
         )}
       </div>
-
+      <div>
+        {players.map((player, j) =>
+        <div>
+          <b className = {`player${j + 1}`} style  = {{marginBottom: (j >= 2) ? '200px' : `${-50}px`, textAlign: 'center', width: '270px', marginLeft: (j === 1 || j === 2) ? '-185px' : '0px'}}>
+        {player.username === sessionStorage.getItem('username') ? <div>
+          <div>You!</div> 
+          <div>Score: {player.score}</div>
+          {/* {cardField.length < players.length && turn.username === sessionStorage.getItem('username') && (
+              <h3>Your turn</h3>
+            )} */}
+          </div>: <div>
+            <div>{player.username}</div>
+            {/* {cardField.length < players.length && turn.username === player.username && (
+              <h3>Current turn</h3>
+            )} */}
+            </div> }
+        </b>
+        </div>
+        )}
+      </div>
       <div>
         {players.map((player, j) =>
           <div>
@@ -195,7 +207,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
               <img style={{
                 marginLeft: (j === 0 || j === 3) ? (i) * 90 : -(i) * 90,
                 animationName: 'drawCard' + (i + 1).toString(),
-                filter: turn.username === sessionStorage.getItem('username') ? '' : 'brightness(70%)'
+                filter: turn.username === sessionStorage.getItem('username') ? '' : 'brightness(65%)'
               }} className={`cardFace player${j + 1}`} id="playerHand" src={require('../ItalianCards/' + card.name + '.jpg')} alt={card.name} onClick={() => {
                 if (turn.username === sessionStorage.getItem('username') && (hand.length === 3 || cards.length < players.length) && cardField.length <= 3) {
                   handleCardField({
@@ -207,28 +219,23 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
               }
               } />
             )}
-            <div><b>{player.username}</b></div>
-            </div>
-            
-            : <div >
+            </div>        
+            :
               <div> {[...Array(player.handLength)].map((item, k) =>
               <img className = {`player${j+1}`} src = {require('../ItalianCards/CardBacking1.png')}
               style = {{marginLeft: (j === 0 || j === 3) ? (k) * 90 : -(k) * 90,
                  height: '155px', 
-                 width: '89px', 
-                 filter: turn.username === player.username ? '' : 'brightness(70%)'}} />
+                 width: '89px',
+                  
+                 filter: turn.username === player.username ? '' : 'brightness(65%)'}} />
               )}
               
              </div>
-             <div><b>{player.username}</b></div>
-             </div>}
+             }
              
           </div>
         )}
       </div>
-
-
-
 
       <div>
         {cardField && (
@@ -236,11 +243,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
             {cardField.map((card, i) => <img style={{ marginLeft: (cardField.length * 45) - ((i + 1) * 90) }} src={require('../ItalianCards/' + card.card.name + '.jpg')} className="cardFace" id="cardField" alt={card.name} />)}
           </div>
         )}
-
-      </div>
-
-      <div>
-        {/* {cards.map((card, i) => <img src={require('../ItalianCards/' + card.name + '.jpg')} width="100" height="207" />)} */}
 
       </div>
 

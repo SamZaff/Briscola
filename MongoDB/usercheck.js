@@ -26,7 +26,7 @@ client.connect((err) => {
     let usernames = []
     // this should be a mongo find
     db.collection('Users')
-      .find({ username: req.body.username, password: md5(req.body.password) }, { $exists: true })
+      .find({ username: req.body.username, password: md5(req.body.password+'_'+req.body.username) }, { $exists: true })
       .toArray()
       .then((docs) => {
         console.log(docs)
@@ -67,7 +67,7 @@ client.connect((err) => {
           db.collection('Users')
             .insert({
               username: req.body.username,
-              password: md5(req.body.password)
+              password: md5(req.body.password+'_'+req.body.username)
             })
             .then(() => {
               valid = true

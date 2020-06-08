@@ -160,6 +160,7 @@ ul {
   background-color: rgb(170, 169, 169);
   width: 75px;
   height: 143px;
+  animation-duration: .4s;
   /* touch-action: manipulation; */
 }
 
@@ -173,25 +174,25 @@ ul {
   bottom: 68%;
   left: 2%;
   position: fixed;
-  animation-duration: .3s;
+  /* animation-duration: .4s; */
 }
 .player2 {
   bottom: 68%;
   left: 92%;
   position: fixed;
-  animation-duration: .3s;
+  /* animation-duration: .4s; */
 }
 .player3 {
   bottom: 3%;
   left: 92%;
   position: fixed;
-  animation-duration: .3s;
+  /* animation-duration: .4s; */
 }
 .player4 {
   bottom: 3%;
   left: 2%;
   position: fixed;
-  animation-duration: .3s;
+  /* animation-duration: .4s; */
 }
 #cardField {
   bottom: 45%;
@@ -200,16 +201,17 @@ ul {
 }
 
 .deck{
-  left: calc(50% - 45px);
-  top: calc(20% - 90px);
-  position: fixed;
   width: 89px;
   height: 155px;
+  transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
 }
 
 .winScreen {
   position: absolute;
-  top: 70%
+  top: 60%;
+  width: 100%;
+  text-align: center;
 }
 
 #turn:hover {
@@ -303,16 +305,16 @@ tr:nth-child(even){background-color: #d8dde7;}
 }
 
 @keyframes drawCard1 {
-  0%   {left:calc(50% - 45px); bottom:calc(80% - 90px); filter: brightness(100%);}
-  100%   {filter: brightness(100%);}
+  0%   {transform: rotate(90deg); left:calc(50% - 45px); bottom:calc(95% - 155px); filter: brightness(100%);}
+  100%   {transform: rotate(0deg); filter: brightness(100%);}
 }
 
 @keyframes drawCard2 {
-  0%   {margin-left: 0; left:calc(50% - 45px); bottom:calc(80% - 90px); filter: brightness(100%);}
-  100%   {filter: brightness(100%);}
+  0%   {transform: rotate(90deg); margin-left: 0; left:calc(50% - 45px); bottom:calc(95% - 155px); filter: brightness(100%);}
+  100%   {transform: rotate(0deg); filter: brightness(100%);}
 }
 
 @keyframes drawCard3 {
-  0%   {margin-left: 0; left:calc(50% - 45px); bottom:calc(80% - 90px); filter: brightness(100%);}
-  100%   {filter: brightness(100%);}
+  0%   {transform: rotate(90deg); margin-left: 0; left:calc(50% - 45px); bottom:calc(95% - 155px); filter: brightness(100%);}
+  100%   {transform: rotate(0deg); filter: brightness(100%);}
 }

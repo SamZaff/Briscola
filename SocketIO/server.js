@@ -250,7 +250,7 @@ module.exports.drawCard = (io, data) => {
   let num = 0;
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
-      console.log('DRAWCARD PASS!')
+      // console.log('DRAWCARD PASS!')
       num = i
       break;
     }
@@ -279,7 +279,7 @@ module.exports.sendCard = (io, data) => {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
       num = i
-      console.log('SENDCARD PASS!')
+      // console.log('SENDCARD PASS!')
       break;
     }
   }
@@ -303,7 +303,7 @@ module.exports.sendCard = (io, data) => {
     determineWinner(io, num)
   }
   if (rooms[num].playedCards >= 40) {
-    io.in(rooms[num]).emit('update', {
+    io.in(rooms[num].name).emit('update', {
       type: 'FINISH_GAME',
       roomName: rooms[num].name
     })
@@ -315,7 +315,7 @@ module.exports.clearField = (io, data) => {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
       num = i
-      console.log('CLEARFIELD PASS!')
+      // console.log('CLEARFIELD PASS!')
       break;
     }
   }

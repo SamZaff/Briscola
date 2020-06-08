@@ -54,6 +54,7 @@ socket.on('update', messageObject => {
       store.dispatch(updatePlayerList(messageObject.updatedScores))
       break;
     case 'FINISH_GAME':
+      console.log('PING PONG')
       store.dispatch(toggleCheckOverallWinner(true))
       break;
     case 'RECIEVE_REQUEST':
