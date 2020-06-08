@@ -31,11 +31,13 @@
     "ws": "^7.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix src && npm run build --prefix src"
+    "client-install": "npm install --prefix src",
+    "start": "node server.js",
+    "server": "node server.js",
+    "client": "npm start --prefix src",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix src && npm run build --prefix src",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
     "node": "10.15.3"
