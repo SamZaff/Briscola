@@ -16,12 +16,7 @@ app.use((req, res, next) => {
     next();
 })
 
-if (process.env.NODE_ENV === "production") {
-    console.log('DIRECTORY: ' + path.resolve( __dirname))
-}
-else {
-    console.log('failed.......')
-}
+
 
 app.use(express.static('./public'));
 app.get('/', (req, res) => res.send('Hello From Express!'))
@@ -71,6 +66,17 @@ io.on('connection', (socket) => {
         console.log(e);
     });
 })
+
+if (process.env.NODE_ENV === "production") {
+    // console.log('DIRECTORY: ' + path.resolve( __dirname))
+    app.use(express.static(path.resolve(__dirname, '/app', 'build')))
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '/app', 'build', 'index.html'))
+    })
+}
+else {
+    console.log('failed.......')
+}
 
 http.listen(port, () => {
     console.log('Listening on port: ', port);
