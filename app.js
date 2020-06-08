@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 })
 
 if (process.env.NODE_ENV === "production") {
-    console.log(__dirname)
+    console.log('DIRECTORY:' + __dirname)
 }
 
 app.use(express.static('./public'));
