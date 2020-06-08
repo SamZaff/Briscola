@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const port = process.env.PORT || 4000
 const http = require('http').Server(app); //POTENTIALLY REMOVE
 const io = require('socket.io')(http)
+const path = require('path')
 app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -16,7 +17,7 @@ app.use((req, res, next) => {
 })
 
 if (process.env.NODE_ENV === "production") {
-    console.log('DIRECTORY:' + __dirname)
+    console.log('DIRECTORY: ' + path.resolve( __dirname))
 }
 
 app.use(express.static('./public'));
