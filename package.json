@@ -37,6 +37,9 @@
     "eject": "react-scripts eject",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix src && npm run build --prefix src"
   },
+  "engines": {
+    "node": "10.15.3"
+  },
   "author": "Sam Zaffanella",
   "eslintConfig": {
     "extends": "react-app"
