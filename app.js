@@ -16,7 +16,7 @@ app.use((req, res, next) => {
     next();
 })
 
-
+console.log('SERVER LOG TEST')
 
 app.use(express.static('./public'));
 app.get('/', (req, res) => res.send('Hello From Express!'))
