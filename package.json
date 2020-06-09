@@ -10,6 +10,7 @@
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.0",
     "http-proxy": "^1.18.0",
+    "http-proxy-middleware": "^1.0.4",
     "install": "^0.13.0",
     "md5": "^2.2.1",
     "mongodb": "^3.5.3",
@@ -40,7 +41,6 @@
     "eject": "react-scripts eject",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install && npm run build ",
     "dev": "concurrently \"npm run server\" \"npm run client\""
-
   },
   "engines": {
     "node": "10.15.3"
