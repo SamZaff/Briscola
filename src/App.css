@@ -7,6 +7,7 @@
 
 body {
   background-color: #f8f8ff;
+  box-sizing: border-box;
 }
 
 .h2 {
@@ -304,6 +305,58 @@ tr:nth-child(even){background-color: #d8dde7;}
   flex: 1;
 }
 
+
+/* CHAT BOX CSS */
+
+.chatbox {
+  bottom: 1%;
+  width: 40%;
+  left: 30%;
+  margin: 0 auto;
+  position: absolute;
+  border: solid 1px #000000;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.send-message-form input {
+  width: 100%;
+    border: none;
+    font-size: 16px;
+    padding: 10px;
+    border-top: solid 1px #000000;
+}
+
+.send-message-form button {
+  display: none;
+}
+
+.chat-container {
+  height: 250px;
+  overflow: auto;
+  direction: rtl;
+  background-color: #282c34;
+  color: white;
+  
+}
+
+.message {
+  padding-left: 15px;
+  direction: ltr;
+  text-align: left;
+}
+
+.avatar {
+  float: left;
+  margin-right: 5px;
+  color: red;
+}
+
+.datetime {
+  float: right;
+  color: #999;
+}
+  
 @keyframes drawCard1 {
   0%   {transform: rotate(90deg); left:calc(50% - 45px); bottom:calc(95% - 155px); filter: brightness(100%);}
   100%   {transform: rotate(0deg); filter: brightness(100%);}

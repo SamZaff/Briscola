@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { updatePlayerList } from './redux/actions/userActions';
 import { updateNotes } from './redux/actions/notesActions';
-import { updateCards, updateTurn, updateCardField, toggleCheckOverallWinner, setTrumpSuit, toggleJoinRequest, updateHand } from './redux/actions/cardsActions'
+import { updateCards, updateTurn, updateCardField, toggleCheckOverallWinner, setTrumpSuit, toggleJoinRequest, updateHand, updateChat } from './redux/actions/cardsActions'
 import { applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'
 import socketIOClient from 'socket.io-client'
@@ -18,7 +18,6 @@ const socket = socketIOClient()
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 socket.on('update', messageObject => {
-    console.log(messageObject.type)
     switch (messageObject.type) {
     case 'UPDATE_MESSAGES':
       store.dispatch(updateNotes(messageObject.notes))
@@ -54,11 +53,13 @@ socket.on('update', messageObject => {
       store.dispatch(updatePlayerList(messageObject.updatedScores))
       break;
     case 'FINISH_GAME':
-      console.log('PING PONG')
       store.dispatch(toggleCheckOverallWinner(true))
       break;
     case 'RECIEVE_REQUEST':
       store.dispatch(toggleJoinRequest([messageObject.joining]))
+      break;
+    case 'GET_MESSAGE':
+      store.dispatch(updateChat(messageObject.message))
       break;
     case 'CANCEL':
       store.dispatch(toggleJoinRequest([]))

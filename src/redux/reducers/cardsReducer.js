@@ -5,7 +5,8 @@ const DEFAULT_STATE = {
   turn: '',
   checkOverallWinner: false,
   trump: {},
-  joinRequest: []
+  joinRequest: [],
+  chat: []
 };
 
 const cardsReducer = (state = DEFAULT_STATE, action) => {
@@ -26,8 +27,12 @@ const cardsReducer = (state = DEFAULT_STATE, action) => {
         return {
           ...state,
           cardField: [action.cardField, ...state.cardField],
-          // joinRequest: [...state.joinRequest, action.joinRequest[0]]
         }
+      }
+    case 'UPDATE_CHAT':
+      return {
+        ...state,
+        chat: [...state.chat, action.chat],
       }
     case 'UPDATE_HAND':
       return {

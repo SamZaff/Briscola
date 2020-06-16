@@ -37,3 +37,8 @@ export const toggleJoinRequest = joinRequest => ({
     type: 'TOGGLE_JOIN_REQUEST',
     joinRequest
 })
+
+export const updateChat = chat => ({
+    type: 'UPDATE_CHAT',
+    chat
+})

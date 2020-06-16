@@ -159,7 +159,8 @@ module.exports.submitRoom = (socket, io, data) => {
     turn: 0,
     cardField: [],
     deck: temp,
-    playedCards: 0
+    playedCards: 0,
+    chat: []
   })
   socket.join(data.roomName)
   module.exports.sendRooms(io)
@@ -331,7 +332,6 @@ module.exports.restartGame = (io, data) => {
   let num = 0;
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
-      console.log('RESTART GAME PASS!')
       num = i
       break;
     }
@@ -363,5 +363,22 @@ module.exports.restartGame = (io, data) => {
     players: rooms[num].users,
     roomName: rooms[num].name,
     cardField: []
+  })
+}
+
+module.exports.sendMessage = (io, data) => {
+  for (var i = 0; i < rooms.length; i++) {
+    if (rooms[i].name === data.room) {
+      num = i
+      break;
+    }
+  }
+  console.log(data.message)
+  rooms[num].chat.push({username: data.username, message: data.message})
+
+
+  io.in(rooms[num].name).emit('update', {
+    type: 'GET_MESSAGE',
+    message: {username: data.username, message: data.message}
   })
 }
