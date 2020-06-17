@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node app.js",
     "server": "node app.js",
+    "build": "concurrently \"cd frontend && npm run build\" \"npm build \"",
     "client": "npm start --prefix frontend",
     "client-install": "npm install --prefix frontend",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend",
