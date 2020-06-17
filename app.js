@@ -18,8 +18,8 @@ app.use((req, res, next) => {
 
 console.log('SERVER LOG TEST')
 
-app.use(express.static('./public'));
-app.get('/', (req, res) => res.send('Hello From Express!'))
+// app.use(express.static('./public'));
+// app.get('/', (req, res) => res.send('Hello From Express!'))
 
 app.use(userCheck)
 
@@ -79,9 +79,9 @@ io.on('connection', (socket) => {
 
 if (process.env.NODE_ENV === "production") {
     // console.log('DIRECTORY: ' + path.resolve( __dirname))
-    app.use(express.static(path.resolve(__dirname, 'build')))
+    app.use(express.static(path.resolve(__dirname, 'frontend', 'build')))
     app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'build', 'index.html'))
+        res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
     })
 }
 http.listen(port, () => {

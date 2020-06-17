@@ -1,64 +1,37 @@
 {
-  "name": "Briscola",
-  "version": "0.1.0",
-  "proxy": "http://localhost:4000",
+  "name": "briscola",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "server": "node app.js",
+    "client": "npm start --prefix frontend",
+    "client-install": "npm install --prefix frontend",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamZaff/Briscola.git"
+  },
+  "author": "Sam Zaffanella",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SamZaff/Briscola/issues"
+  },
+  "homepage": "https://github.com/SamZaff/Briscola#readme",
   "dependencies": {
-    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
-    "bootstrap": "^4.4.1",
     "concurrently": "^5.2.0",
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.0",
-    "http-proxy": "^1.18.0",
+    "http-proxy": "^1.18.1",
     "http-proxy-middleware": "^1.0.4",
-    "install": "^0.13.0",
     "md5": "^2.2.1",
-    "mongodb": "^3.5.3",
+    "mongodb": "^3.5.9",
     "mongodb-client": "0.0.1",
-    "react": "^16.11.0",
-    "react-bootstrap": "^1.0.0",
-    "react-dom": "^16.10.1",
-    "react-hook-form": "^5.4.2",
-    "react-image": "^2.4.0",
-    "react-loading": "^2.0.3",
-    "react-native": "^0.61.5",
-    "react-redux": "^7.1.1",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.0",
-    "redux": "^4.0.4",
-    "redux-thunk": "^2.3.0",
     "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0",
-    "ws": "^7.2.0"
-  },
-  "scripts": {
-    "start": "react-scripts start && webpack-dev-server",
-    "server": "node app.js",
-    "client": "npm start",
-    "client-install": "npm install",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install && npm run build ",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "react-scripts build"
-  },
-  "engines": {
-    "node": "10.15.3"
-  },
-  "author": "Sam Zaffanella",
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "socket.io-client": "^2.3.0"
   }
 }
