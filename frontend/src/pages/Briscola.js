@@ -281,7 +281,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       <div className = "chatbox">
         <div className ='chat-container'>
           <div className ='message'>
-            <p>Welcome to Briscola!</p>
+            <p><b>Welcome to Briscola!</b></p>
           </div>
           {chat.map((message, i) =>
           <div className = 'message'>
