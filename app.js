@@ -71,9 +71,9 @@ io.on('connection', (socket) => {
 if (process.env.NODE_ENV === "production") {
     console.log('testing');
     console.log(__dirname);
-    app.use(express.static(path.resolve(__dirname, './app', 'frontend', 'build')));
+    app.use(express.static(path.resolve(__dirname, '/app', 'frontend', 'build')));
 	app.get('*', (req, res) => {
-	  res.sendFile(path.resolve(__dirname, './app' ,'frontend', 'build', 'index.html'));
+	  res.sendFile(path.resolve(__dirname, '/app' ,'frontend', 'build', 'index.html'));
 	});
 }
 http.listen(port, () => {
