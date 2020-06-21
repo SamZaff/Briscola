@@ -12,10 +12,6 @@ app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(express.json());
-app.use((req, res, next) => {
-    console.log(req.path)
-    next();
-})
 
 
 
