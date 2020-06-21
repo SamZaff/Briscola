@@ -9,7 +9,7 @@ const url = 'mongodb://localhost:27017';
 //Database
 let dbName = 'CardGame'
 if(process.env.NODE_ENV === 'production'){
-  dbName = 'heroku_32lrds1q'
+  dbName = 'heroku_3wlr8ghk'
 }
 
 const client = new MongoClient(url);

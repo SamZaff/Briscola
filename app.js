@@ -4,7 +4,7 @@ const userCheck = require('./MongoDB/usercheck');
 //const socketIO = require('./socketIO/server.js');
 const bodyParser = require('body-parser')
 const port = process.env.PORT || 4000
-const http = require('http').Server(app); //POTENTIALLY REMOVE
+const http = require('http').Server(app);
 //const io = require('socket.io')(http)
 const path = require('path')
 
