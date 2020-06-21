@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const userCheck = require('./MongoDB/usercheck');
-const socketIO = require('./socketIO/server');
+const socketIO = require('./SocketIO/server');
 const bodyParser = require('body-parser')
 const port = process.env.PORT || 4000
 const http = require('http').Server(app);
