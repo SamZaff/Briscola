@@ -1,7 +1,4 @@
-// var deckLogic = require('../deck').data
-var deckLogic = {getDeck: function () {
-
-}}
+var deckLogic = require('../deck').data
 var defaultDeck = deckLogic.getDeck()
 
 var rooms = []
