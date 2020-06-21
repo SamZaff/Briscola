@@ -1,4 +1,7 @@
-var deckLogic = require('../deck').data
+// var deckLogic = require('../deck').data
+var deckLogic = {getDeck: function () {
+
+}}
 var defaultDeck = deckLogic.getDeck()
 
 var rooms = []
@@ -73,7 +76,6 @@ const determineWinner = (io, num) => {
     updatedScores: rooms[num].users
   })
 }
-//NEW VERSION DOWN HERE
 
 module.exports.sendRooms = (io) => {
   for (var i = 0; i < rooms.length; i) {
