@@ -4,7 +4,6 @@ const app = express.Router();
 const { MongoClient } = require('mongodb');
 
 //Connection URL
-// const url = 'mongodb://localhost:27017';
 const url = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 
 //Database

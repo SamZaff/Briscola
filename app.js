@@ -5,7 +5,7 @@ const userCheck = require('./MongoDB/usercheck');
 const bodyParser = require('body-parser')
 const port = process.env.PORT || 4000
 const http = require('http').Server(app);
-//const io = require('socket.io')(http)
+const io = require('socket.io')(http)
 const path = require('path')
 
 app.use(function(req, res, next) {
@@ -71,9 +71,9 @@ io.on('connection', (socket) => {
 if (process.env.NODE_ENV === "production") {
     console.log('testing');
     console.log(__dirname);
-    app.use(express.static(path.resolve(__dirname, 'client', 'build')));
+    app.use(express.static(path.resolve(__dirname, './app', 'frontend', 'build')));
 	app.get('*', (req, res) => {
-	  res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+	  res.sendFile(path.resolve(__dirname, './app' ,'frontend', 'build', 'index.html'));
 	});
 }
 http.listen(port, () => {
