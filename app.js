@@ -18,10 +18,7 @@ app.use(bodyParser.json())
 
 console.log('SERVER LOG TEST')
 
-//app.get('/', (req, res) => res.send('Hello From Express!'))
-
 app.use(userCheck)
-
 
 io.on('connection', (socket) => {
     if (socket.id) {
@@ -66,7 +63,6 @@ io.on('connection', (socket) => {
         console.log(e);
     });
 })
-
 
 if (process.env.NODE_ENV === "production") {
     console.log('testing');
