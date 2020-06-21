@@ -1,3 +1,4 @@
+console.log('SERVER LOG TEST')
 const express = require('express');
 const app = express();
 const userCheck = require('./MongoDB/usercheck.js');
@@ -16,7 +17,7 @@ app.use((req, res, next) => {
     next();
 })
 
-console.log('SERVER LOG TEST')
+
 
 // app.use(express.static('./public'));
 // app.get('/', (req, res) => res.send('Hello From Express!'))
@@ -77,8 +78,9 @@ io.on('connection', (socket) => {
     });
 })
 
+console.log('DIRECTORY: ', path.resolve(__dirname))
+
 if (process.env.NODE_ENV === "production") {
-    // console.log('DIRECTORY: ' + path.resolve( __dirname))
     app.use(express.static(path.resolve(__dirname, '/app', 'frontend', 'build')))
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, '/app', 'frontend', 'build', 'index.html'))

@@ -308,7 +308,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 };
 
 const mapStateToProps = state => ({
-  notes: state.notesReducer.notes,
   cards: state.cardsReducer.cards,
   cardField: state.cardsReducer.cardField,
   hand: state.cardsReducer.hand,
