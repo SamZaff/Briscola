@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const userCheck = require('./MongoDB/usercheck');
-//const socketIO = require('./socketIO/server.js');
+const socketIO = require('./socketIO/server');
 const bodyParser = require('body-parser')
 const port = process.env.PORT || 4000
 const http = require('http').Server(app);
@@ -22,7 +22,7 @@ console.log('SERVER LOG TEST')
 
 app.use(userCheck)
 
-/*
+
 io.on('connection', (socket) => {
     if (socket.id) {
         socket.on('getRooms', () => {
@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
         console.log(e);
     });
 })
-*/
+
 
 if (process.env.NODE_ENV === "production") {
     console.log('testing');
