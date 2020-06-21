@@ -55,6 +55,9 @@ io.on('connection', (socket) => {
         socket.on('restartGame', (data) => {
             socketIO.restartGame(io, data)
         })
+        socket.on('message', (data) => {
+            socketIO.sendMessage(io, data)
+        })
     }
     socket.on('disconnect', () => {
         console.log('someone has disconnected!');
