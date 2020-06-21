@@ -7,7 +7,10 @@ const { MongoClient } = require('mongodb');
 const url = 'mongodb://localhost:27017';
 
 //Database
-const dbName = 'CardGame'
+let dbName = 'CardGame'
+if(process.env.NODE_ENV === 'production'){
+  dbName = 'heroku_32lrds1q'
+}
 
 const client = new MongoClient(url);
 
