@@ -27,7 +27,9 @@ const Login = () => {
                     console.log('account not found')
                 }
             })
-            .catch(console.log('something went wrong!'))
+            .catch(e => {
+                console.log(e)
+            })
         sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
         // axios.post('db/check', {})
     }

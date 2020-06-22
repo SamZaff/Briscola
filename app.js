@@ -16,6 +16,11 @@ app.use(function(req, res, next) {
 });
 app.use(bodyParser.json())
 
+app.use((req, res, next) => {
+    console.log(req.path)
+    next();
+})
+
 console.log('SERVER LOG TEST')
 
 app.use(userCheck)

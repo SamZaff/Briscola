@@ -37,13 +37,10 @@ client.connect((err) => {
         docs.map(data => {
           usernames.push(data.username)
         })
-        if (usernames.length === 0) {
-          res.redirect('../')
-        }
-        else {
+        if (usernames.length !== 0) {
           valid = true
-          res.redirect('../Rooms')
         }
+        res.send({valid, color: data.color})
       })
       .catch((e) => {
         console.log('invalid')
@@ -52,9 +49,10 @@ client.connect((err) => {
   });
 
   app.post('/insertAcc', (req, res) => {
+    console.log('USERNAME:' + req.query.username)
     let valid = false;
     let usernames = []
-
+    // console.log(req)
     db.collection('Users')
       .find({}, { projection: { _id: 0 } })
       .toArray()
@@ -71,11 +69,12 @@ client.connect((err) => {
           db.collection('Users')
             .insert({
               username: req.body.username,
-              password: md5(req.body.password+'_'+req.body.username)
+              password: md5(req.body.password+'_'+req.body.username),
+              color: req.body.color
             })
             .then(() => {
               valid = true
-              res.redirect('../Rooms')
+              res.send({valid})
             })
             .catch((e) => {
               console.log(e)
@@ -84,7 +83,7 @@ client.connect((err) => {
             })
         }
         else {
-          res.redirect('../')
+          res.send({valid})
         }
       })
 
