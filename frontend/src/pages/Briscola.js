@@ -164,7 +164,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 
         {players && (
           <div style={{ marginTop: '-30px' }}>
-            {players.length === 1 ? (
+            {players.length <= 1 ? (
               <h3> <b>Waiting for players...</b></h3>
             ) : (<h3><b>{turn.username}'s turn</b></h3>)}
             <div>Trump suit: {trump.suit} ({trump.name})</div>

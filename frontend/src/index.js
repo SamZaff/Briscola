@@ -33,9 +33,9 @@ socket.on('update', messageObject => {
       store.dispatch(updateTurn(messageObject.turn))
       store.dispatch(updateCards(messageObject.cards))
       store.dispatch(setTrumpSuit(messageObject.trump))
+      store.dispatch(toggleCheckOverallWinner(false))
       if (messageObject.cardField) {
         store.dispatch(updateCardField(messageObject.cardField))
-        store.dispatch(toggleCheckOverallWinner(false))
         store.dispatch(updateHand([]))
       }
       break;
