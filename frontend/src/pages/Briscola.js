@@ -142,7 +142,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
         left: 'calc(40%)', width: '20%',
         top: 'calc(5%)', position: 'fixed', textAlign: 'center'
       }}>
-        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 /*&& players.length > 1*/ ?
+        {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 ?
           <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='turn' alt='DECK' onClick={() => handleDraw()} />
           : <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='notTurn' alt='DECK' onClick={() => getStats()} />}
 

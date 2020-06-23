@@ -204,14 +204,7 @@ module.exports.remove = (socket, io, data) => {
         rooms[temp].users.splice(j, 1)
       }
     }
-    stuff = {
-      type: 'UPDATE_PLAYER_LIST',
-      players: rooms[temp].users,
-      turn: 0,
-      cards: rooms[temp].deck,
-      trump: rooms[temp].trump
-    }
-    socket.in(rooms[temp].name).emit('update', stuff)
+    module.exports.restartGame(io, {room: rooms[temp].name})
     module.exports.sendRooms(io)
   }
 
