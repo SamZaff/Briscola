@@ -107,41 +107,14 @@ module.exports.joinRoom = (socket, io, data) => {
         handLength: 0,
         id: socket.id
       })
-      rooms[i].cardField = []
-      rooms[i].playedCards = 0
-      if (rooms[i].users.length === 3) {
-        rooms[i].deck = Object.assign([], defaultDeck)
-        rooms[i].deck.splice(21, 1)
-        rooms[i].deck = deckLogic.shuffle(rooms[i].deck)
-        rooms[i].playedCards++
-      }
-      else {
-        rooms[i].deck = deckLogic.shuffle(Object.assign([], defaultDeck))
-      }
-      rooms[i].trump = rooms[i].deck.pop()
-      rooms[i].deck.unshift(rooms[i].trump)
 
-      rooms[i].turn = 0
-      for (var j = 0; j < rooms[i].users.length - 1; j++) {
-        rooms[i].users[j].score = 0
-        rooms[i].users[j].handLength = 0
-      }
-      stuff = {
-        players: rooms[i].users,
-        turn: rooms[i].users[0],
-        type: 'UPDATE_PLAYER_LIST',
-        roomName: data.roomName,
-        cards: rooms[i].deck,
-        cardField: [],
-        trump: rooms[i].trump
-      }
       socket.join(data.roomName)
+      module.exports.restartGame(io, {room: data.roomName})
       module.exports.sendRooms(io)
       break;
     }
   }
 
-  io.in(stuff.roomName).emit('update', stuff)
 }
 
 module.exports.submitRoom = (socket, io, data) => {
@@ -213,8 +186,6 @@ module.exports.remove = (socket, io, data) => {
 
 module.exports.response = (io, data) => {
   var roomSize = Object.keys(io.sockets.adapter.rooms[data.room].sockets).length
-  console.log(roomSize)
-  console.log(io.sockets.adapter.rooms[data.room].sockets)
   var requestNames = []
   for (var i = 0; i < data.joinRequest.length; i++) {
     if (roomSize < 4 && !requestNames.includes(data.joinRequest[i].username)) {
@@ -338,7 +309,7 @@ module.exports.restartGame = (io, data) => {
     rooms[num].users[i].handLength = 0
   }
   io.in(rooms[num].name).emit('update', {
-    type: 'UPDATE_PLAYER_LIST',
+    type: 'RESTART_GAME',
     turn: rooms[num].users[0],
     trump: rooms[num].trump,
     cards: rooms[num].deck,

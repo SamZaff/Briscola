@@ -34,10 +34,15 @@ socket.on('update', messageObject => {
       store.dispatch(updateCards(messageObject.cards))
       store.dispatch(setTrumpSuit(messageObject.trump))
       store.dispatch(toggleCheckOverallWinner(false))
-      if (messageObject.cardField) {
-        store.dispatch(updateCardField(messageObject.cardField))
-        store.dispatch(updateHand([]))
-      }
+      break;
+    case 'RESTART_GAME':
+      store.dispatch(updatePlayerList(messageObject.players))
+      store.dispatch(updateTurn(messageObject.turn))
+      store.dispatch(updateCards(messageObject.cards))
+      store.dispatch(setTrumpSuit(messageObject.trump))
+      store.dispatch(toggleCheckOverallWinner(false))
+      store.dispatch(updateCardField(messageObject.cardField))
+      store.dispatch(updateHand([]))
       break;
     case 'FIELD_CLEAR':
       store.dispatch(updateCardField(messageObject.cardField))
@@ -75,7 +80,6 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
-
 
 function helper() {
   return socket;

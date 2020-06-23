@@ -152,7 +152,8 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
             <div>Cards left in deck: {cards.length}</div>
             {players.length <= 1 ? (
               <h3> <b>Waiting for players...</b></h3>
-            ) : (<h3><b>{turn.username}'s turn</b></h3>)}
+            ) : (<div> {cardField.length !== players.length && (
+            <h3><b>{turn.username}'s turn</b></h3>)}</div>)}
             {(cardField.length === players.length && cardField.length !== 0) && (
               <div>
                 <button onClick={() => {
