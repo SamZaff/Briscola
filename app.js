@@ -6,7 +6,8 @@ const bodyParser = require('body-parser')
 const port = process.env.PORT || 4000
 const http = require('http').Server(app);
 const io = require('socket.io')(http)
-const path = require('path')
+const path = require('path');
+const { Socket } = require('socket.io-client');
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -42,9 +43,6 @@ io.on('connection', (socket) => {
         socket.on('joinRequest', (data) => {
             socketIO.joinRequest(socket, io, data)
         })
-        socket.on('remove', (data) => {
-            socketIO.remove(socket, io, data)
-        })
         socket.on('response', (data) => {
             socketIO.response(io, data)
         })
@@ -63,10 +61,12 @@ io.on('connection', (socket) => {
         socket.on('message', (data) => {
             socketIO.sendMessage(io, data)
         })
+        socket.on('disconnect', () => {
+            console.log('someone has disconnected! ', socket.id);
+            socketIO.remove(socket, io)
+        })
     }
-    socket.on('disconnect', () => {
-        console.log('someone has disconnected!');
-    });
+   
     socket.on('error', (e) => {
         console.log(e);
     });

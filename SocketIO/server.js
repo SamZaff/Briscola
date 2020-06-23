@@ -105,6 +105,7 @@ module.exports.joinRoom = (socket, io, data) => {
         username: data.username,
         score: 0,
         handLength: 0,
+        id: socket.id
       })
       rooms[i].cardField = []
       rooms[i].playedCards = 0
@@ -153,6 +154,7 @@ module.exports.submitRoom = (socket, io, data) => {
       username: data.username,
       score: 0,
       handLength: 0,
+      id: socket.id
     }],
     trump: trump,
     turn: 0,
@@ -188,44 +190,32 @@ module.exports.joinRequest = (socket, io, data) => {
 
 module.exports.remove = (socket, io, data) => {
   var stuff;
-    var temp;
-    var tempTurn;
-    if (data.room) {
-      for (var i = 0; i < rooms.length; i++) {
-        if (rooms[i].name === data.room) {
-          if (data.turn) {
-            tempTurn = data.turn
-          }
-          else {
-            tempTurn = rooms[i].turn
-          }
-          rooms[i].users.find(function (item, j) {
-            if (item) {
-              if (item.username === data.username) {
-                temp = j
-                rooms[i].users.splice(temp, 1)
-
-              }
-            }
-          })
-          stuff = {
-            type: 'UPDATE_PLAYER_LIST',
-            players: rooms[i].users,
-            turn: tempTurn,
-            cards: rooms[i].deck,
-            trump: rooms[i].trump
-          }
-        }
-        break;
+  var temp = -1;
+  var tempTurn;
+  for (var i = 0; i < rooms.length; i++) {
+    if (rooms[i].users.some(item => item.id === socket.id)) {
+      temp = i;
+      break;
+    }
+  }
+  if (temp > -1) {
+    for (var j = 0; j < rooms[temp].users.length; j++) {
+      if (rooms[temp].users[j].id === socket.id) {
+        rooms[temp].users.splice(j, 1)
       }
-      
-      module.exports.sendRooms(io)
-      socket.in(data.room).emit('update', stuff)
+    }
+    stuff = {
+      type: 'UPDATE_PLAYER_LIST',
+      players: rooms[temp].users,
+      turn: 0,
+      cards: rooms[temp].deck,
+      trump: rooms[temp].trump
+    }
+    socket.in(rooms[temp].name).emit('update', stuff)
+    module.exports.sendRooms(io)
+  }
 
-    }
-    else {
-      console.log('not actively in room')
-    }
+
 }
 
 module.exports.response = (io, data) => {
@@ -372,12 +362,11 @@ module.exports.sendMessage = (io, data) => {
       break;
     }
   }
-  console.log(data.message)
-  rooms[num].chat.push({username: data.username, message: data.message})
+  rooms[num].chat.push({ username: data.username, message: data.message })
 
 
   io.in(rooms[num].name).emit('update', {
     type: 'GET_MESSAGE',
-    message: {username: data.username, message: data.message}
+    message: { username: data.username, message: data.message, color: data.color }
   })
 }

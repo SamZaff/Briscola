@@ -20,6 +20,7 @@ const Login = () => {
                 if (res.data.valid) {
                     console.log('account found')
                     sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
+                    sessionStorage.setItem('color', res.data.color)
                     window.location.href = '/Rooms'
                 }
                 else {
@@ -31,7 +32,6 @@ const Login = () => {
                 console.log(e)
             })
         sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
-        // axios.post('db/check', {})
     }
 
     const submitSignupForm = () => {
@@ -48,6 +48,7 @@ const Login = () => {
                         if (res.data.valid) {
                             console.log('account added')
                             sessionStorage.setItem('username', document.getElementsByName('username')[1].value)
+                            sessionStorage.setItem('color', res.data.color)
                             window.location.href = '/Rooms'
                         }
                         else {

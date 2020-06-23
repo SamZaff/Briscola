@@ -319,12 +319,26 @@ tr:nth-child(even){background-color: #d8dde7;}
   overflow: hidden;
 }
 
-.send-message-form input {
-  width: 100%;
-    border: none;
-    font-size: 16px;
-    padding: 10px;
-    border-top: solid 1px #000000;
+#chat-input {
+  width: 85%;
+  border: none;
+  font-size: 16px;
+  padding: 10px;
+  border-top: solid 1px #000000;
+  border-right: solid 1px #000000;
+  float: left;
+  height: 20px;
+}
+
+#chat-color {
+  width: 5%;  
+  border: none;
+  margin-top: 1px;
+  /* padding: 10px; */
+  border: solid 1px #000000;
+  padding: 0;
+  height: 36px;
+  /* display: none; */
 }
 
 .send-message-form button {

@@ -9,36 +9,19 @@ import '../App.css'
 
 const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOverallWinner, trump, joinRequest, chat }) => {
 
-  const scrollToBottom = (i) => {
-    console.log(document.getElementsByName(i).values)
-    // document.getElementsByName(i)[0].scrollIntoView({behavior: "smooth"})
+  var end = React.useRef(null)
+  
+  const scrollToBottom = () => {
+    end.current.scrollIntoView({behavior: "smooth"})
   };
 
+  React.useEffect(scrollToBottom, [chat])
 
   window.onload = function () {
     sessionStorage.removeItem('room')
 
   }
 
-  window.onbeforeunload = function () {
-    if (turn.username === this.sessionStorage.getItem('username')) {
-      turn = players[(players.indexOf(turn) + 1) % players.length]
-    }
-    const data = {
-      room: sessionStorage.getItem('room'),
-      username: sessionStorage.getItem('username'),
-      turn
-    };
-    if (sessionStorage.getItem('room')) {
-      // client to server
-      sessionStorage.removeItem('room')
-      helper.helper().emit('remove', data)
-    }
-    if (joinRequest.length > 0) {
-      requestResponse('decline')
-    }
-
-  }
 
   const usersToRespond = () => {
     var temp = [];
@@ -82,7 +65,8 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       type: 'message',
       message: document.getElementById('chat-input').value,
       username: sessionStorage.getItem('username'),
-      room: sessionStorage.getItem('room')
+      room: sessionStorage.getItem('room'),
+      color: document.getElementById('chat-color').value
     };
     // client to server
     helper.helper().emit('message', data)
@@ -164,11 +148,11 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 
         {players && (
           <div style={{ marginTop: '-30px' }}>
+            <div>Trump suit: {trump.suit} ({trump.name})</div>
+            <div>Cards left in deck: {cards.length}</div>
             {players.length <= 1 ? (
               <h3> <b>Waiting for players...</b></h3>
             ) : (<h3><b>{turn.username}'s turn</b></h3>)}
-            <div>Trump suit: {trump.suit} ({trump.name})</div>
-            <div>Cards left in deck: {cards.length}</div>
             {(cardField.length === players.length && cardField.length !== 0) && (
               <div>
                 <button onClick={() => {
@@ -195,14 +179,8 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
               {player.username === sessionStorage.getItem('username') ? <div>
                 <div>You!</div>
                 <div>Score: {player.score}</div>
-                {/* {cardField.length < players.length && turn.username === sessionStorage.getItem('username') && (
-              <h3>Your turn</h3>
-            )} */}
               </div> : <div>
                   <div>{player.username}</div>
-                  {/* {cardField.length < players.length && turn.username === player.username && (
-              <h3>Current turn</h3>
-            )} */}
                 </div>}
             </b>
           </div>
@@ -211,7 +189,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       <div>
         {players.map((player, j) =>
           <div>
-            {player.username === sessionStorage.getItem('username') ? <div >{hand.map((card, i) =>
+            {player.username === sessionStorage.getItem('username') ? <div>{hand.map((card, i) =>
               <img style={{
                 marginLeft: (j === 0 || j === 3) ? (i) * 90 : -(i) * 90,
                 animationName: 'drawCard' + (i + 1).toString(),
@@ -285,21 +263,20 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
           </div>
           {chat.map((message, i) =>
           <div className = 'message'>
-            <p name = {i}><b style = {{color: ['dodgerblue','red','lime','yellow'][
-              0
-            ]}}>{message.username === sessionStorage.getItem('username') ? 'You' : message.username}</b>: {message.message}</p>
-            {scrollToBottom(i)}
+            <p name = {i}><b style = {{color: message.color}}>{message.username === sessionStorage.getItem('username') ? 'You' : message.username}</b>: {message.message}</p>
             </div>
             
           )}
-          
+          <div ref = {end}></div>
         </div>
         <form className ="send-message-form" onSubmit={(e) => {
           e.preventDefault()
           sendChatMessage()
+          scrollToBottom()
         }
         }>
           <input autoComplete="off" id = 'chat-input' type="text" placeholder='Type something...'></input>
+          <input type = "color" id = 'chat-color' defaultValue = '#1e90ff'></input>
           <button id="message-submit" type="submit"></button>
         </form>
       </div>

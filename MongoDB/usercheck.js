@@ -35,12 +35,13 @@ client.connect((err) => {
       .then((docs) => {
         console.log(docs)
         docs.map(data => {
-          usernames.push(data.username)
+          console.log(data.color)
+          usernames.push({username: data.username, color: data.color})
         })
         if (usernames.length !== 0) {
           valid = true
         }
-        res.send({valid, color: data.color})
+        res.send({valid, color: usernames.color})
       })
       .catch((e) => {
         console.log('invalid')
@@ -74,7 +75,7 @@ client.connect((err) => {
             })
             .then(() => {
               valid = true
-              res.send({valid})
+              res.send({valid, color: req.body.color})
             })
             .catch((e) => {
               console.log(e)
