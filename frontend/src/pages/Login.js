@@ -20,7 +20,6 @@ const Login = () => {
                 if (res.data.valid) {
                     console.log('account found')
                     sessionStorage.setItem('username', document.getElementsByName('username')[0].value)
-                    sessionStorage.setItem('color', res.data.color)
                     window.location.href = '/Rooms'
                 }
                 else {
@@ -40,7 +39,6 @@ const Login = () => {
                 axios.post('/insertAcc', {
                     username: document.getElementsByName('username')[1].value,
                     password: document.getElementsByName('password')[1].value,
-                    color: document.getElementsByName('color')[0].value
 
                 })
                     .then((res) => {
@@ -48,7 +46,6 @@ const Login = () => {
                         if (res.data.valid) {
                             console.log('account added')
                             sessionStorage.setItem('username', document.getElementsByName('username')[1].value)
-                            sessionStorage.setItem('color', res.data.color)
                             window.location.href = '/Rooms'
                         }
                         else {
@@ -106,9 +103,6 @@ const Login = () => {
                     </div>
                     <div>
                         <input name="password_confirm" type='password' className="inputs" id="password_confirm" placeholder="Confirm Password" onChange={passwordCheck} required />
-                    </div>
-                    <div>
-                        What's your favorite color? <input name="color" defaultValue="#0000ff" type="color"></input>
                     </div>
                     <button className="signup" onClick={submitSignupForm}><span>Sign Up</span></button>
                 </form>

@@ -362,7 +362,7 @@ module.exports.sendMessage = (io, data) => {
       break;
     }
   }
-  rooms[num].chat.push({ username: data.username, message: data.message })
+  // rooms[num].chat.push({ username: data.username, message: data.message })
 
 
   io.in(rooms[num].name).emit('update', {
