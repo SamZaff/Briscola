@@ -35,13 +35,12 @@ client.connect((err) => {
       .then((docs) => {
         console.log(docs)
         docs.map(data => {
-          console.log(data.color)
-          usernames.push({username: data.username, color: data.color})
+          usernames.push({username: data.username})
         })
         if (usernames.length !== 0) {
           valid = true
         }
-        res.send({valid, color: usernames.color})
+        res.send({valid})
       })
       .catch((e) => {
         console.log('invalid')
@@ -71,11 +70,10 @@ client.connect((err) => {
             .insert({
               username: req.body.username,
               password: md5(req.body.password+'_'+req.body.username),
-              color: req.body.color
             })
             .then(() => {
               valid = true
-              res.send({valid, color: req.body.color})
+              res.send({valid})
             })
             .catch((e) => {
               console.log(e)
