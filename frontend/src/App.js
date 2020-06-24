@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom";
 import Login from './pages/Login';
 import Briscola from './pages/Briscola';
 import Rooms from './pages/Rooms';
+import About from './pages/About'
 import { connect } from 'react-redux';
 import { Navbar, Nav } from 'react-bootstrap'
 import helper from './index'
@@ -24,6 +25,7 @@ const App = () => {
                 helper.helper().emit('remove', { room, username })
               }}>Lobby</Nav.Link>
             )}
+            <Nav.Link className = "nav-bar-content" href = "/About" style={{color: 'white'}}>About</Nav.Link>
             {sessionStorage.getItem('username') && (
               <Nav.Link className="nav-bar-content" href="/" style={{ color: 'white', display: 'right' }} onClick={() => {
                 const room = sessionStorage.getItem('room')
@@ -33,6 +35,7 @@ const App = () => {
                 helper.helper().emit('remove', { room, username })
               }}>Signout</Nav.Link>
             )}
+            
           </Nav>
         </Navbar.Collapse>
       </Navbar>
@@ -40,6 +43,7 @@ const App = () => {
       <Switch>
         <Route path="/Briscola" component={Briscola} />
         <Route path="/Rooms" component={Rooms} />
+        <Route path="/About" component = {About} />
         <Route path="/" component={Login} />
       </Switch>
     </div>

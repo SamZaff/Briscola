@@ -22,6 +22,11 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 
   }
 
+  // window.addEventListener('beforeunload', (event) => {
+  //   requestResponse('decline')
+  //   event.preventDefault()
+  //   event.returnValue = ''
+  // })
 
   const usersToRespond = () => {
     var temp = [];
@@ -55,8 +60,9 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       room: sessionStorage.getItem('room'),
       username: sessionStorage.getItem('username')
     };
-    // client to server
     turn = ''
+    document.getElementById('turn').setAttribute("disabled", "disabled")
+    // client to server
     helper.helper().emit('drawCard', data)
   };
 
@@ -143,7 +149,9 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
         top: 'calc(5%)', position: 'fixed', textAlign: 'center'
       }}>
         {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 ?
-          <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='turn' alt='DECK' onClick={() => handleDraw()} />
+          <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='turn' alt='DECK' onClick={() => {
+            document.getElementById('turn').setAttribute('disabled', 'disable')
+            handleDraw()}} />
           : <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='notTurn' alt='DECK' onClick={() => getStats()} />}
 
         {players && (
