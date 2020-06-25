@@ -209,25 +209,25 @@ module.exports.drawCard = (socket, io, data) => {
       break;
     }
   }
-  if (io.sockets.adapter.rooms[rooms[num].name].sockets[socket.id]) {
-    for (var j = 0; j < rooms[num].users.length; j++) {
-      if (rooms[num].users[j].username === data.username) {
-        rooms[num].users[j].handLength++
-        rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
-        rooms[num].deck.pop()
-        let stuff = {
-          type: 'SET_REMAINING_CARDS',
-          remainingCards: rooms[num].deck,
-          currentTurn: rooms[num].users[rooms[num].turn],
-          roomName: rooms[num].name,
-          players: rooms[num].users
-        }
-        io.in(data.room).emit('update', stuff)
-        break
+  if (!io.sockets.adapter.rooms[rooms[num].name].sockets[socket.id]) {
+    return
+  }
+  for (var j = 0; j < rooms[num].users.length; j++) {
+    if (rooms[num].users[j].username === data.username) {
+      rooms[num].users[j].handLength++
+      rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
+      rooms[num].deck.pop()
+      let stuff = {
+        type: 'SET_REMAINING_CARDS',
+        remainingCards: rooms[num].deck,
+        currentTurn: rooms[num].users[rooms[num].turn],
+        roomName: rooms[num].name,
+        players: rooms[num].users
       }
+      io.in(data.room).emit('update', stuff)
+      break
     }
   }
-  
 
 
 }
