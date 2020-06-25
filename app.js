@@ -44,10 +44,11 @@ io.on('connection', (socket) => {
             socketIO.joinRequest(socket, io, data)
         })
         socket.on('response', (data) => {
+            console.log('RESPONSE RECEIVED')
             socketIO.response(io, data)
         })
         socket.on('drawCard', (data) => {
-            socketIO.drawCard(io, data)
+            socketIO.drawCard(socket, io, data)
         })
         socket.on('sendCard', (data) => {
             socketIO.sendCard(io, data)
@@ -65,6 +66,7 @@ io.on('connection', (socket) => {
             console.log('someone has disconnected! ', socket.id);
             socketIO.remove(socket, io)
         })
+        socket.on('TEST', () => console.log('THIS IS A TEST!!'))
     }
    
     socket.on('error', (e) => {

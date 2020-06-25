@@ -109,7 +109,7 @@ module.exports.joinRoom = (socket, io, data) => {
       })
 
       socket.join(data.roomName)
-      module.exports.restartGame(io, {room: data.roomName})
+      module.exports.restartGame(io, { room: data.roomName })
       module.exports.sendRooms(io)
       break;
     }
@@ -177,7 +177,7 @@ module.exports.remove = (socket, io, data) => {
         rooms[temp].users.splice(j, 1)
       }
     }
-    module.exports.restartGame(io, {room: rooms[temp].name})
+    module.exports.restartGame(io, { room: rooms[temp].name })
     module.exports.sendRooms(io)
   }
 
@@ -185,46 +185,50 @@ module.exports.remove = (socket, io, data) => {
 }
 
 module.exports.response = (io, data) => {
-  var roomSize = Object.keys(io.sockets.adapter.rooms[data.room].sockets).length
-  var requestNames = []
-  for (var i = 0; i < data.joinRequest.length; i++) {
-    if (roomSize < 4 && !requestNames.includes(data.joinRequest[i].username)) {
-      io.to(data.joinRequest[i].id).emit(data.response, data.room)
-      roomSize++
-      requestNames.push(data.joinRequest[i].username)
-    }
-    else {
-      io.to(data.joinRequest[i].id).emit('decline', data.room)
+  if (data.joinRequest.length > 0) {
+    var roomSize = Object.keys(io.sockets.adapter.rooms[data.room].sockets).length
+    var requestNames = []
+    for (var i = 0; i < data.joinRequest.length; i++) {
+      if (roomSize < 4 && !requestNames.includes(data.joinRequest[i].username)) {
+        io.to(data.joinRequest[i].id).emit(data.response, data.room)
+        roomSize++
+        requestNames.push(data.joinRequest[i].username)
+      }
+      else {
+        io.to(data.joinRequest[i].id).emit('decline', data.room)
+      }
     }
   }
-
 }
 
-module.exports.drawCard = (io, data) => {
+module.exports.drawCard = (socket, io, data) => {
   let num = 0;
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
-      // console.log('DRAWCARD PASS!')
       num = i
       break;
     }
   }
-  for (var j = 0; j < rooms[num].users.length; j++) {
-    if (rooms[num].users[j].username === data.username) {
-      rooms[num].users[j].handLength++
-      break
+  if (io.sockets.adapter.rooms[rooms[num].name].sockets[socket.id]) {
+    for (var j = 0; j < rooms[num].users.length; j++) {
+      if (rooms[num].users[j].username === data.username) {
+        rooms[num].users[j].handLength++
+        rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
+        rooms[num].deck.pop()
+        let stuff = {
+          type: 'SET_REMAINING_CARDS',
+          remainingCards: rooms[num].deck,
+          currentTurn: rooms[num].users[rooms[num].turn],
+          roomName: rooms[num].name,
+          players: rooms[num].users
+        }
+        io.in(data.room).emit('update', stuff)
+        break
+      }
     }
   }
-  rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
-  rooms[num].deck.pop()
-  let stuff = {
-    type: 'SET_REMAINING_CARDS',
-    remainingCards: rooms[num].deck,
-    currentTurn: rooms[num].users[rooms[num].turn],
-    roomName: rooms[num].name,
-    players: rooms[num].users
-  }
-  io.in(data.room).emit('update', stuff)
+  
+
 
 }
 
@@ -233,7 +237,6 @@ module.exports.sendCard = (io, data) => {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
       num = i
-      // console.log('SENDCARD PASS!')
       break;
     }
   }
