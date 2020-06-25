@@ -10,12 +10,20 @@ import '../App.css'
 const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOverallWinner, trump, joinRequest, chat }) => {
 
   var end = React.useRef(null)
-  
+
   const scrollToBottom = () => {
-    end.current.scrollIntoView({behavior: "smooth"})
+    end.current.scrollIntoView({ behavior: "smooth" })
   };
 
   React.useEffect(scrollToBottom, [chat])
+
+  // React.useEffect(() => {
+  //   if (cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1) {
+  //     handleDraw()
+  //     console.log('DRAWING!!')
+  //     turn = ''
+  //   }
+  // }, []);
 
   window.onload = function () {
     sessionStorage.removeItem('room')
@@ -33,11 +41,9 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 
     for (var i = 0; i < joinRequest.length; i++) {
       if (!temp.includes(joinRequest[i].username)) {
-        console.log(joinRequest[i])
         temp.push(joinRequest[i].username)
       }
     }
-    console.log(joinRequest.length)
     return temp.join(' & ')
   }
 
@@ -60,10 +66,13 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       room: sessionStorage.getItem('room'),
       username: sessionStorage.getItem('username')
     };
+    // document.getElementById('turn').setAttribute("disabled", "disabled")
     turn = ''
-    document.getElementById('turn').setAttribute("disabled", "disabled")
+    console.log('turn: ', turn)
     // client to server
-    helper.helper().emit('drawCard', data)
+    // setTimeout(() => {
+      helper.helper().emit('drawCard', data)
+    // }, 2000);
   };
 
   const sendChatMessage = () => {
@@ -77,7 +86,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     // client to server
     helper.helper().emit('message', data)
     document.getElementById('chat-input').value = ''
-    
+
   };
 
   const handleCardField = (card) => {
@@ -130,13 +139,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     }
   }
 
-  const getStats = () => {
-    console.log(cards.length > 0)
-    console.log(turn.username)
-    console.log(turn.username === sessionStorage.getItem('username'))
-    console.log(hand.length < 3)
-    console.log(cardField.length === 0)
-  }
+  
 
   return (
     <div>
@@ -148,11 +151,11 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
         left: 'calc(40%)', width: '20%',
         top: 'calc(5%)', position: 'fixed', textAlign: 'center'
       }}>
+        {/* {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 && handleDraw()} */}
         {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 ?
           <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='turn' alt='DECK' onClick={() => {
-            document.getElementById('turn').setAttribute('disabled', 'disable')
             handleDraw()}} />
-          : <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='notTurn' alt='DECK' onClick={() => getStats()} />}
+          : <img src={require('../ItalianCards/CardBacking1.png')} className='deck' id='notTurn' alt='DECK'/>}
 
         {players && (
           <div style={{ marginTop: '-30px' }}>
@@ -161,7 +164,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
             {players.length <= 1 ? (
               <h3> <b>Waiting for players...</b></h3>
             ) : (<div> {cardField.length !== players.length && (
-            <h3><b>{turn.username}'s turn</b></h3>)}</div>)}
+              <h3><b>{turn.username}'s turn</b></h3>)}</div>)}
             {(cardField.length === players.length && cardField.length !== 0) && (
               <div>
                 <button onClick={() => {
@@ -265,27 +268,27 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       {!sessionStorage.getItem('username') && (
         <Redirect to="/" />
       )}
-      <div className = "chatbox">
-        <div className ='chat-container'>
-          <div className ='message'>
+      <div className="chatbox">
+        <div className='chat-container'>
+          <div className='message'>
             <p><b>Welcome to Briscola!</b></p>
           </div>
           {chat.map((message, i) =>
-          <div className = 'message'>
-            <p name = {i}><b style = {{color: message.color}}>{message.username === sessionStorage.getItem('username') ? 'You' : message.username}</b>: {message.message}</p>
+            <div className='message'>
+              <p name={i}><b style={{ color: message.color }}>{message.username === sessionStorage.getItem('username') ? 'You' : message.username}</b>: {message.message}</p>
             </div>
-            
+
           )}
-          <div ref = {end}></div>
+          <div ref={end}></div>
         </div>
-        <form className ="send-message-form" onSubmit={(e) => {
+        <form className="send-message-form" onSubmit={(e) => {
           e.preventDefault()
           sendChatMessage()
           scrollToBottom()
         }
         }>
-          <input autoComplete="off" id = 'chat-input' type="text" placeholder='Type something...'></input>
-          <input type = "color" id = 'chat-color' defaultValue = '#1e90ff'></input>
+          <input autoComplete="off" id='chat-input' type="text" placeholder='Type something...'></input>
+          <input type="color" id='chat-color' defaultValue='#1e90ff'></input>
           <button id="message-submit" type="submit"></button>
         </form>
       </div>
