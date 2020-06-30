@@ -43,6 +43,7 @@ socket.on('update', messageObject => {
       store.dispatch(toggleCheckOverallWinner(false))
       store.dispatch(updateCardField(messageObject.cardField))
       store.dispatch(updateHand([]))
+      store.dispatch(updateChat(messageObject.message))
       break;
     case 'FIELD_CLEAR':
       store.dispatch(updateCardField(messageObject.cardField))

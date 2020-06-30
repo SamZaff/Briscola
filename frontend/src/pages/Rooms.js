@@ -95,7 +95,7 @@ const Rooms = () => {
                         <th>Status</th>
                     </tr>
                     {rooms.map((room, i) => (
-                        <tr key={i}>
+                        <tr key={i} style = {{color: 'black'}}>
                             <td>{room.name}</td>
                             <td>{room.users.length}/4</td>
 
@@ -117,16 +117,16 @@ const Rooms = () => {
 
                         </tr>
                     ))}
-
-                </table>
-                {rooms.length < 1 && (
-                    <div className="empty">
+                    {rooms.length < 1 && (
+                    <tr className="empty">
                         No rooms currently available...
-                    </div>
+                    </tr>
                 )}
+                </table>
+                
                 <h4>Create a Room:</h4>
                 <form>
-                    <input className="inputs" type="text" value={newRoom} onChange={e => setNewRoom(e.target.value)} required />
+                    <input placeholder = "Enter a room name" className="inputs" type="text" value={newRoom} onChange={e => setNewRoom(e.target.value)} required />
                     <div >
                         <button className="new" onClick={submitRoom}>New Room</button>
                     </div>

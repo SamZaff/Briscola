@@ -5,7 +5,8 @@ var rooms = []
 
 const determineWinner = (io, num) => {
   var points = 0
-  var leadingSuit = rooms[num].cardField[0].card.suit
+  //cardField.some() checks to see if any of the cards are trump cards
+  var leadingSuit = rooms[num].cardField.some(item => item.card.suit === rooms[num].trump.suit) ? rooms[num].trump.suit : rooms[num].cardField[0].card.suit
   var highest = {
     card: {
       value: 0,
@@ -14,41 +15,20 @@ const determineWinner = (io, num) => {
   };
   var tempField = [...rooms[num].cardField]
 
-  //cardField.some() checks to see if any of the cards are trump cards
-  if (rooms[num].cardField.some(item => item.card.suit === rooms[num].trump.suit)) {
-
-    for (var i = 0; i < rooms[num].users.length; i++) {
-      points = points + rooms[num].cardField[i].card.value
-      if (rooms[num].cardField[i].card.suit !== rooms[num].trump.suit) {
-        tempField.splice(tempField.indexOf(rooms[num].cardField[i]), 1)
-        //this has to be changed
-      }
-    }
-  }
-  else {
-
-    for (var i = 0; i < rooms[num].users.length; i++) {
-      points = points + rooms[num].cardField[i].card.value
-      if (rooms[num].cardField[i].card.suit !== leadingSuit) {
-        tempField.splice(tempField.indexOf(rooms[num].cardField[i]), 1)
-        //this has to be changed
-      }
+  for (var i = 0; i < rooms[num].users.length; i++) {
+    points += rooms[num].cardField[i].card.value
+    if (rooms[num].cardField[i].card.suit !== leadingSuit) {
+      tempField.splice(tempField.indexOf(rooms[num].cardField[i]), 1)
+      //this has to be changed
     }
   }
 
-  if (tempField.some(item => item.card.value > 0)) { //HIGHEST NEEDS TO BE HIGHEST.CARD.VALUE
+  if (tempField.some(item => item.card.value > 0)) {
     for (var i = 0; i < tempField.length; i++) {
       if (highest.card.value < tempField[i].card.value) {
         highest = tempField[i]
       }
     }
-    rooms[num].turn = rooms[num].users.findIndex(function (item, i) {
-      if (item.username === highest.username) {
-        rooms[num].users[i].score += points
-        return highest.username
-      }
-    })
-
   }
   else {
     for (var i = 0; i < tempField.length; i++) {
@@ -56,13 +36,15 @@ const determineWinner = (io, num) => {
         highest = tempField[i]
       }
     }
+  }
+
+  if (points > 0) {
     rooms[num].turn = rooms[num].users.findIndex(function (item, i) {
       if (item.username === highest.username) {
         rooms[num].users[i].score += points
         return highest.username
       }
     })
-
   }
 
   io.in(rooms[num].name).emit('update', {
@@ -84,9 +66,6 @@ module.exports.sendRooms = (io) => {
       i++
     }
   }
-  if (rooms.length === 0) {
-    console.log('no rooms left')
-  }
   io.sockets.emit('sendRooms', rooms)
 }
 
@@ -98,7 +77,6 @@ module.exports.cancel = (io, data) => {
 
 module.exports.joinRoom = (socket, io, data) => {
 
-  var stuff;
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.roomName) {
       rooms[i].users.push({
@@ -161,26 +139,19 @@ module.exports.joinRequest = (socket, io, data) => {
   io.to(Object.keys(io.sockets.adapter.rooms[data.roomName].sockets)[0]).emit('update', message)
 }
 
-module.exports.remove = (socket, io, data) => {
-  var stuff;
-  var temp = -1;
-  var tempTurn;
+module.exports.remove = (socket, io) => {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].users.some(item => item.id === socket.id)) {
-      temp = i;
+      for (var j = 0; j < rooms[i].users.length; j++) {
+        if (rooms[i].users[j].id === socket.id) {
+          rooms[i].users.splice(j, 1)
+        }
+      }
+      module.exports.restartGame(io, { room: rooms[i].name })
+      module.exports.sendRooms(io)
       break;
     }
   }
-  if (temp > -1) {
-    for (var j = 0; j < rooms[temp].users.length; j++) {
-      if (rooms[temp].users[j].id === socket.id) {
-        rooms[temp].users.splice(j, 1)
-      }
-    }
-    module.exports.restartGame(io, { room: rooms[temp].name })
-    module.exports.sendRooms(io)
-  }
-
 
 }
 
@@ -232,13 +203,16 @@ module.exports.drawCard = (socket, io, data) => {
 
 }
 
-module.exports.sendCard = (io, data) => {
+module.exports.sendCard = (socket, io, data) => {
   let num = 0;
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
       num = i
       break;
     }
+  }
+  if (!io.sockets.adapter.rooms[rooms[num].name].sockets[socket.id]) {
+    return
   }
   for (var j = 0; j < rooms[num].users.length; j++) {
     if (rooms[num].users[j].username === data.username) {
@@ -248,7 +222,8 @@ module.exports.sendCard = (io, data) => {
   }
   rooms[num].turn = (rooms[num].turn + 1) % rooms[num].users.length
   rooms[num].cardField.push(data.newCard)
-  rooms[num].playedCards++
+  rooms[num].playedCards++,
+  console.log(rooms[num].users[rooms[num].turn])
   io.in(rooms[num].name).emit('update', {
     type: 'SET_GLOBAL_CARD',
     cardField: data.newCard,
@@ -272,7 +247,6 @@ module.exports.clearField = (io, data) => {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
       num = i
-      // console.log('CLEARFIELD PASS!')
       break;
     }
   }
@@ -318,7 +292,8 @@ module.exports.restartGame = (io, data) => {
     cards: rooms[num].deck,
     players: rooms[num].users,
     roomName: rooms[num].name,
-    cardField: []
+    cardField: [],
+    message: { message: `Game resetting...Trump card drawn (${rooms[num].trump.name})`, color: 'white'}
   })
 }
 
@@ -326,14 +301,14 @@ module.exports.sendMessage = (io, data) => {
   for (var i = 0; i < rooms.length; i++) {
     if (rooms[i].name === data.room) {
       num = i
+      io.in(rooms[num].name).emit('update', {
+        type: 'GET_MESSAGE',
+        message: { username: data.username, message: data.message, color: data.color }
+      })
       break;
     }
   }
   // rooms[num].chat.push({ username: data.username, message: data.message })
 
 
-  io.in(rooms[num].name).emit('update', {
-    type: 'GET_MESSAGE',
-    message: { username: data.username, message: data.message, color: data.color }
-  })
 }

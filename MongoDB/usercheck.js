@@ -13,7 +13,7 @@ if(process.env.NODE_ENV === 'production'){
 }
 
 
-const client = new MongoClient(url);
+const client = new MongoClient(url, {useUnifiedTopology: true});
 
 client.connect((err) => {
   if (err) {

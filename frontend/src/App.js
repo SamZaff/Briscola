@@ -18,16 +18,21 @@ const App = () => {
         <Navbar.Collapse>
           <Nav>
             {sessionStorage.getItem('username') && (
-              <Nav.Link className="nav-bar-content" href="/Rooms" style={{ color: 'white' }} onClick={() => {
+              <Nav.Link className="nav-bar-content" href="/Rooms" onClick={() => {
                 const room = sessionStorage.getItem('room')
                 const username = sessionStorage.getItem('username')
                 sessionStorage.removeItem('room')
                 helper.helper().emit('remove', { room, username })
               }}>Lobby</Nav.Link>
             )}
-            <Nav.Link className = "nav-bar-content" href = "/About" style={{color: 'white'}}>About</Nav.Link>
+            <Nav.Link className="nav-bar-content" href="/About" onClick={() => {
+              const room = sessionStorage.getItem('room')
+              const username = sessionStorage.getItem('username')
+              sessionStorage.removeItem('room')
+              helper.helper().emit('remove', { room, username })
+            }}>About</Nav.Link>
             {sessionStorage.getItem('username') && (
-              <Nav.Link className="nav-bar-content" href="/" style={{ color: 'white', display: 'right' }} onClick={() => {
+              <Nav.Link className="nav-bar-content" href="/" onClick={() => {
                 const room = sessionStorage.getItem('room')
                 const username = sessionStorage.getItem('username')
                 sessionStorage.removeItem('username')
@@ -35,7 +40,7 @@ const App = () => {
                 helper.helper().emit('remove', { room, username })
               }}>Signout</Nav.Link>
             )}
-            
+
           </Nav>
         </Navbar.Collapse>
       </Navbar>
@@ -43,7 +48,7 @@ const App = () => {
       <Switch>
         <Route path="/Briscola" component={Briscola} />
         <Route path="/Rooms" component={Rooms} />
-        <Route path="/About" component = {About} />
+        <Route path="/About" component={About} />
         <Route path="/" component={Login} />
       </Switch>
     </div>

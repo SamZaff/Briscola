@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
             socketIO.drawCard(socket, io, data)
         })
         socket.on('sendCard', (data) => {
-            socketIO.sendCard(io, data)
+            socketIO.sendCard(socket, io, data)
         })
         socket.on('clearField', (data) => {
             socketIO.clearField(io, data)
@@ -66,7 +66,6 @@ io.on('connection', (socket) => {
             console.log('someone has disconnected! ', socket.id);
             socketIO.remove(socket, io)
         })
-        socket.on('TEST', () => console.log('THIS IS A TEST!!'))
     }
    
     socket.on('error', (e) => {
