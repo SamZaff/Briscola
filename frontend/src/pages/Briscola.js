@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { connect } from 'react-redux';
-import { updateHand, toggleJoinRequest } from '../redux/actions/cardsActions'
+import { updateHand, toggleJoinRequest, updateTurn } from '../redux/actions/cardsActions'
 import { Redirect } from 'react-router-dom';
 import helper from '../index'
 import '../App.css'
@@ -21,7 +21,10 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
   //   if (cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1) {
   //     handleDraw()
   //     console.log('DRAWING!!')
-  //     turn = ''
+  //     // turn = ''
+  //   }
+  //   else {
+  //     console.log('WHYYYYY')
   //   }
   // }, []);
 
@@ -66,8 +69,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       room: sessionStorage.getItem('room'),
       username: sessionStorage.getItem('username')
     };
-    // document.getElementById('turn').setAttribute("disabled", "disabled")
-    turn = ''
+    dispatch(updateTurn(''))
     console.log('turn: ', turn)
     // client to server
     // setTimeout(() => {
@@ -252,6 +254,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       </div>
 
       <div>
+      {/* {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 && handleDraw()} */}
         {cardField && (
           <div>
             {cardField.map((card, i) => <img style={{ marginLeft: (cardField.length * 35) - ((i + 1) * 71) }} src={require('../ItalianCards/' + card.card.name + '.jpg')} className="card-face" id="cardField" alt={card.name} />)}

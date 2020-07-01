@@ -17,11 +17,14 @@ const socket = socketIOClient()
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 socket.on('update', messageObject => {
-    switch (messageObject.type) {
+  switch (messageObject.type) {
     case 'SET_GLOBAL_CARD':
-      store.dispatch(updateCardField(messageObject.cardField))
-      store.dispatch(updateTurn(messageObject.currentTurn))
-      store.dispatch(updatePlayerList(messageObject.players))
+      // React.setTimeout(() => {
+        store.dispatch(updateCardField(messageObject.cardField))
+        store.dispatch(updateTurn(messageObject.currentTurn))
+        store.dispatch(updatePlayerList(messageObject.players))
+      // }, 500);
+
       break;
     case 'SET_REMAINING_CARDS':
       store.dispatch(updateCards(messageObject.remainingCards))
@@ -86,4 +89,4 @@ function helper() {
   return socket;
 }
 
-export default{helper}
+export default { helper }
