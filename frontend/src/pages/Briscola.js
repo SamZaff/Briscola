@@ -170,7 +170,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       </div>
 
       <div className="turn-state">
-        {trump.name && <img src={require('../ItalianCards/' + trump.name + '.jpg')} className='card-face' alt='trump.name'></img>}
+        {trump.name && cards.length > 0 && <img src={require('../ItalianCards/' + trump.name + '.jpg')} className='card-face' alt='trump.name'></img>}
         {players && (
           <div>
             {players.length <= 1 ? (
