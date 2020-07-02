@@ -144,7 +144,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 
 
   return (
-    <div className>
+    <div>
       {!sessionStorage.getItem('username') && (
         <Redirect to="/" />
       )}

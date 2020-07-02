@@ -38,14 +38,14 @@ const determineWinner = (io, num) => {
     }
   }
 
-  if (points > 0) {
+  // if (points > 0) {
     rooms[num].turn = rooms[num].users.findIndex(function (item, i) {
       if (item.username === highest.username) {
         rooms[num].users[i].score += points
         return highest.username
       }
     })
-  }
+  // }
 
   io.in(rooms[num].name).emit('update', {
     type: 'GIVE_POINTS_AND_TURN',

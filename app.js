@@ -22,8 +22,6 @@ app.use((req, res, next) => {
     next();
 })
 
-console.log('SERVER LOG TEST')
-
 app.use(userCheck)
 
 io.on('connection', (socket) => {
