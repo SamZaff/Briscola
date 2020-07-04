@@ -17,27 +17,15 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
 
   React.useEffect(scrollToBottom, [chat])
 
-  // React.useEffect(() => {
-  //   if (cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1) {
-  //     handleDraw()
-  //     console.log('DRAWING!!')
-  //     // turn = ''
-  //   }
-  //   else {
-  //     console.log('WHYYYYY')
-  //   }
-  // }, []);
-
   window.onload = function () {
     sessionStorage.removeItem('room')
 
   }
 
-  // window.addEventListener('beforeunload', (event) => {
-  //   requestResponse('decline')
-  //   event.preventDefault()
-  //   event.returnValue = ''
-  // })
+  if (!sessionStorage.getItem('room')) {
+    chat.push({ message: 'You don\'t appear to be part of any room right now. Go to the lobby to join/create one' })
+    sessionStorage.setItem('room', ' ')
+  }
 
   const usersToRespond = () => {
     var temp = [];
@@ -72,9 +60,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     dispatch(updateTurn(''))
     console.log('turn: ', turn)
     // client to server
-    // setTimeout(() => {
     helper.helper().emit('drawCard', data)
-    // }, 2000);
   };
 
   const sendChatMessage = () => {
@@ -141,8 +127,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
     }
   }
 
-
-
   return (
     <div>
       {!sessionStorage.getItem('username') && (
@@ -154,7 +138,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
         textAlign: 'center',
         paddingTop: '1%'
       }}>
-        {/* {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 && handleDraw()} */}
 
         {cards.length > 0 && trump.name &&
           <div style={{ position: 'relative' }}>
@@ -170,14 +153,14 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       </div>
 
       <div className="turn-state">
-        {trump.name && cards.length > 0 && <img src={require('../ItalianCards/' + trump.name + '.jpg')} className='card-face' alt='trump.name'></img>}
+        {trump.name && cards.length > 0 && <img src={require('../ItalianCards/' + trump.name + '.jpg')} className='card-face' alt={trump.name}></img>}
         {players && (
           <div>
             {players.length <= 1 ? (
               <h3> <b>Waiting for players...</b></h3>
             ) : (<div> {cardField.length !== players.length && (
-              <h3 style={{ padding: '0' }}><b>{turn.username}'s turn</b></h3>)}</div>)}
-            <div>Cards left in deck: {cards.length}</div>
+              <h2 style={{ marginTop: '0' }}><b>{turn.username}'s turn</b></h2>)}</div>)}
+            <div style={{ marginTop: '0' }}>Cards left in deck: {cards.length}</div>
             {(cardField.length === players.length && cardField.length !== 0) && (
               <div>
                 <button onClick={() => {
@@ -188,16 +171,18 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
           </div>
         )}
 
+        <div className='winScreen'>
+          {checkOverallWinner && (
+            <div>
+              <h2>{getHighestScore()} Wins!</h2>
+              <button style={{ fontSize: 'large' }} onClick={() => restartGame()}>Play Again</button>
+            </div>
+          )}
+        </div>
+
       </div>
 
-      <div className='winScreen'>
-        {checkOverallWinner && (
-          <div>
-            <h2>{getHighestScore()} Wins!</h2>
-            <button style={{ fontSize: 'large' }} onClick={() => restartGame()}>Play Again</button>
-          </div>
-        )}
-      </div>
+
       <div>
         {players.map((player, j) =>
           <div>
@@ -205,7 +190,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
               {player.username === sessionStorage.getItem('username') ? <div>
                 <div>You!</div>
                 <div>Score: {player.score}</div>
-                {/* {player.username === turn.username && <p><b>Your turn</b></p>} */}
               </div> : <div>
                   <div>{player.username}</div>
 
@@ -254,7 +238,6 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
       </div>
 
       <div>
-      {/* {cards.length > 0 && turn.username === sessionStorage.getItem('username') && hand.length < 3 && cardField.length === 0 && players.length > 1 && handleDraw()} */}
         {cardField && (
           <div>
             {cardField.map((card, i) => <img style={{ marginLeft: (cardField.length * 35) - ((i + 1) * 71) }} src={require('../ItalianCards/' + card.card.name + '.jpg')} className="card-face" id="cardField" alt={card.name} />)}
@@ -298,7 +281,7 @@ const Briscola = ({ cards, cardField, hand, players, dispatch, turn, checkOveral
           </div>
           {chat.map((message, i) =>
             <div className='message'>
-              <p name={i} style = {{fontStyle: message.username ? '' : 'italic'}}><b style={{ color: message.color }}>{message.username ? (message.username === sessionStorage.getItem('username') ? 'You:' : message.username+':') : ''}</b> {message.message}</p>
+              <p name={i} style={{ fontStyle: message.username ? '' : 'italic' }}><b style={{ color: message.color }}>{message.username ? (message.username === sessionStorage.getItem('username') ? 'You:' : message.username + ':') : ''}</b> {message.message}</p>
             </div>
 
           )}
