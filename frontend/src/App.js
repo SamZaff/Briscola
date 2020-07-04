@@ -30,8 +30,8 @@ const App = () => {
               const username = sessionStorage.getItem('username')
               sessionStorage.removeItem('room')
               helper.helper().emit('remove', { room, username })
-            }}>About</Nav.Link>
-            {sessionStorage.getItem('username') && (
+            }}>Info</Nav.Link>
+            {sessionStorage.getItem('username') ? (
               <Nav.Link className="nav-bar-content" href="/" onClick={() => {
                 const room = sessionStorage.getItem('room')
                 const username = sessionStorage.getItem('username')
@@ -39,7 +39,7 @@ const App = () => {
                 sessionStorage.removeItem('room')
                 helper.helper().emit('remove', { room, username })
               }}>Signout</Nav.Link>
-            )}
+            ) : <Nav.Link className="nav-bar-content" href="/">Login</Nav.Link>}
 
           </Nav>
         </Navbar.Collapse>
