@@ -3,17 +3,17 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: url(ItalianCards/Background.jpg);
-  background-size: cover;
-  background-repeat: repeat-y;
-  background-position: center center;
-  background-attachment: fixed;
-  background-repeat: repeat-y;
+  
 }
 
 body {
   background-color: #0c5824;
   box-sizing: border-box;
+  background-image: url(ItalianCards/Background.jpg);
+  background-size: cover;
+  background-repeat: repeat-y;
+  background-position: center center;
+  background-attachment: fixed;
   color: #f7e6d4;
   
 }

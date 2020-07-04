@@ -90,14 +90,14 @@ const About = () => {
             </p>
             <h3 ref={cardsRef}>Know the cards</h3>
             <p>
-                Not familiar with Italian cards? Don't worry, many people are intimidated by the fancy and arguably confusing designs
-                of these cards. You will quickly learn that an Italian deck of cards is similar to a standard deck of Bicycle cards. 
-                There are however 3 distinct differences: the types of suits, the number of cards, and the face cards. While decks from 
-                other regions typically have 52 cards (not including jokers), Italian cards have 40, with all the same cards except
-                8s 9s and 10s. There are still 4 suits just like a Bicycle deck, but they are different. Usually, the suits are gold/coin,
-                swords, clubs (literally!), and cups. Lastly are the face cards. While technically the proper names of these 
-                cards aren't Jack, Queen, and King, I use these names for simplicity's sake. To tell which is which, each type has a theme to it. 
-                Queens are always riding horses, Kings are always wearing crowns, and Jacks are shown with neither of these things.
+                Not familiar with Italian cards? Don't worry, you will quickly learn that an Italian deck of cards is similar to a
+                standard deck of Bicycle cards. There are however 3 distinct differences: the types of suits, the number of cards, and
+                 the face cards. While decks from other regions typically have 52 cards (not including jokers), Italian cards have 40, 
+                 with all the same cards except 8s 9s and 10s. There are still 4 suits just like a Bicycle deck, but they are different. 
+                 Usually, the suits are gold/coins, swords, clubs (literally!), and cups. Lastly are the face cards. While technically 
+                 the proper names of these cards aren't Jack, Queen, and King, I use these names for simplicity's sake. To tell which is 
+                 which, each type has a theme to it. Queens are always riding horses, Kings are always wearing crowns, and Jacks are 
+                 shown with neither of these things.
             </p>
             <div className = 'example'>
                     <img src={require('../ItalianCards/Jack of Swords.jpg')} className='card-face' alt='2 of Cups' />
