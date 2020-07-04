@@ -31,7 +31,7 @@ const About = () => {
             <div className='content' ref={summaryRef}>
                 <h2>Summary</h2>
                 <p>Briscola is a popular, often competitively played, Italian card game that consists of 2-4 players.
-                The objective of the game is to score as many points as possible, which is done through winning cards certain
+                The objective of the game is to score as many points as possible, which is done through winning certain
                 cards that are worth varying amounts of points each. A typical match will take about 5 to 10 minutes to complete.</p>
             </div>
             <div className='content' ref={tutorialRef}>
@@ -90,17 +90,32 @@ const About = () => {
             </p>
             <h3 ref={cardsRef}>Know the cards</h3>
             <p>
-                Not familiar with Italian cards? Don't worry, many people are intimidated by the fancy and arguably strange designs
-                of these cards. You will quickly learn that an Italian deck of cards is near idential to a standard deck of Bicycle cards. 
-                There are however 2 distinct differences: the types of suits and the number of cards. While decks from other regions typically
-                have 52 cards (not including jokers), Italian cards have 40, with all the same cards except 8s 9s and 10s. There are still 4
-                suits just like a Bicycle deck, but they are different. Usually, the suits are gold/coin, swords, clubs (literally!), and cups.
+                Not familiar with Italian cards? Don't worry, many people are intimidated by the fancy and arguably confusing designs
+                of these cards. You will quickly learn that an Italian deck of cards is similar to a standard deck of Bicycle cards. 
+                There are however 3 distinct differences: the types of suits, the number of cards, and the face cards. While decks from 
+                other regions typically have 52 cards (not including jokers), Italian cards have 40, with all the same cards except
+                8s 9s and 10s. There are still 4 suits just like a Bicycle deck, but they are different. Usually, the suits are gold/coin,
+                swords, clubs (literally!), and cups. Lastly are the face cards. While technically the proper names of these 
+                cards aren't Jack, Queen, and King, I use these names for simplicity's sake. To tell which is which, each type has a theme to it. 
+                Queens are always riding horses, Kings are always wearing crowns, and Jacks are shown with neither of these things.
             </p>
+            <div className = 'example'>
+                    <img src={require('../ItalianCards/Jack of Swords.jpg')} className='card-face' alt='2 of Cups' />
+                    <p>Jack</p>
+                </div>
+                <div className = 'example'>
+                    <img src={require('../ItalianCards/Queen of Swords.jpg')} className='card-face' alt='2 of Cups' />
+                    <p>Queen</p>
+                </div>
+                <div className = 'example'>
+                    <img src={require('../ItalianCards/King of Swords.jpg')} className='card-face' alt='2 of Cups' />
+                    <p>King</p>
+                </div>
             </div>
             <div className='content' ref={aboutRef}>
                 <h2>About this site</h2>
                 <p>This was a project made during Covid-19 to give my family a way to play one of our favorite card games without having to be
-                    in person. Node.js, Express, MongoDB, CSS, and React.js are the frameworks used to program this project. 
+                    in person. Node.js, Express, MongoDB, CSS, and React.js are the frameworks used to create this website. 
                   JavaScript libraries such as md5 for passwords, axios for transfering client-server data, and socket.io for 
                   real-time player actions. Supported browsers include Google Chrome, Safari, Edge, and Firefox. NOTE: some devices might not
                   display things properly in the game room. Typically the solution is just to zoom out your browser, because some divs may be
